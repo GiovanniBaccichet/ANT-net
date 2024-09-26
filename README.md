@@ -8,7 +8,7 @@
   <h3 align="center">ANT Net</h3>
 
   <p align="center">
-    Infrastructure as Code (IaC) for Internet of Things (IoT) Didactic Lab
+    Infrastructure as Code (IaC) for Advanced Network Technologies (ANT) Didactic Lab
     <br />
     <a href="https://github.com/GiovanniBaccichet/ANT-net"><strong>Explore the docs »</strong></a>
     <br />
