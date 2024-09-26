@@ -116,3 +116,20 @@ resource "proxmox_virtual_environment_cluster_firewall_security_group" "lab-net"
 
 #   serial_device {}
 # }
+
+resource "proxmox_virtual_environment_firewall_rules" "inbound" {
+  depends_on = [
+    # proxmox_virtual_environment_vm.example,
+    proxmox_virtual_environment_cluster_firewall_security_group.lab-net,
+  ]
+
+  node_name = var.proxmox_host
+  vm_id     = 109
+
+
+  rule {
+    security_group = proxmox_virtual_environment_cluster_firewall_security_group.lab-net.name
+    comment        = "Laboratory Network Segment"
+    iface          = "net0"
+  }
+}
