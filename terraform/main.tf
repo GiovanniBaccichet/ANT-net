@@ -328,3 +328,75 @@ resource "proxmox_virtual_environment_firewall_rules" "File-Security-Group" {
     iface          = "net0"
   }
 }
+
+resource "proxmox_virtual_environment_firewall_options" "VPN-Firewall-Options" {
+  depends_on = [proxmox_virtual_environment_vm.vpn-gateway]
+
+  node_name = proxmox_virtual_environment_vm.vpn-gateway.node_name
+  vm_id     = proxmox_virtual_environment_vm.vpn-gateway.vm_id
+
+  dhcp          = true
+  enabled       = true
+  ipfilter      = true
+  log_level_in  = "info"
+  log_level_out = "info"
+  macfilter     = false
+  ndp           = true
+  input_policy  = "ACCEPT"
+  output_policy = "ACCEPT"
+  radv          = true
+}
+
+resource "proxmox_virtual_environment_firewall_options" "MQTT-Firewall-Options" {
+  depends_on = [proxmox_virtual_environment_vm.MQTT-broker]
+
+  node_name = proxmox_virtual_environment_vm.MQTT-broker.node_name
+  vm_id     = proxmox_virtual_environment_vm.MQTT-broker.vm_id
+
+  dhcp          = true
+  enabled       = true
+  ipfilter      = true
+  log_level_in  = "info"
+  log_level_out = "info"
+  macfilter     = false
+  ndp           = true
+  input_policy  = "ACCEPT"
+  output_policy = "ACCEPT"
+  radv          = true
+}
+
+resource "proxmox_virtual_environment_firewall_options" "CoAP-Firewall-Options" {
+  depends_on = [proxmox_virtual_environment_vm.CoAP-server]
+
+  node_name = proxmox_virtual_environment_vm.CoAP-server.node_name
+  vm_id     = proxmox_virtual_environment_vm.CoAP-server.vm_id
+
+  dhcp          = true
+  enabled       = true
+  ipfilter      = true
+  log_level_in  = "info"
+  log_level_out = "info"
+  macfilter     = false
+  ndp           = true
+  input_policy  = "ACCEPT"
+  output_policy = "ACCEPT"
+  radv          = true
+}
+
+resource "proxmox_virtual_environment_firewall_options" "File-Firewall-Options" {
+  depends_on = [proxmox_virtual_environment_vm.File-server]
+
+  node_name = proxmox_virtual_environment_vm.File-server.node_name
+  vm_id     = proxmox_virtual_environment_vm.File-server.vm_id
+
+  dhcp          = true
+  enabled       = true
+  ipfilter      = true
+  log_level_in  = "info"
+  log_level_out = "info"
+  macfilter     = false
+  ndp           = true
+  input_policy  = "ACCEPT"
+  output_policy = "ACCEPT"
+  radv          = true
+}
