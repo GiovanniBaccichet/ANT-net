@@ -22,7 +22,7 @@ variable "vlan_num" {
 #It is safe to default to setting this as the URL for what you used
 #as your `proxmox_host`, although they can be different
 variable "api_url" {
-    default = "https://10.79.5.72:8006/api2/json"
+    default = "https://100.106.35.15:8006/api2/json"
 }
 #Blank var for use by terraform.tfvars
 variable "token_secret" {
