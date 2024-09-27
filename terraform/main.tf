@@ -69,62 +69,257 @@ resource "proxmox_virtual_environment_cluster_firewall_security_group" "lab-net"
   
 }
 
-# resource "proxmox_virtual_environment_vm" "ubuntu_vm" {
-#   name        = "VM1"
-#   description = "Managed by Terraform"
-#   tags        = ["terraform", "ubuntu"]
+resource "proxmox_virtual_environment_vm" "vpn-gateway" {
+  name        = "VPN-gateway"
+  description = "Managed by Terraform"
+  tags        = ["terraform", "networking"]
 
-#   node_name = var.proxmox_host
-#   # vm_id     = 4321
+  node_name = var.proxmox_host
+  vm_id     = 100
 
-#    clone {
-#     vm_id = 102
-#   }
+   clone {
+    vm_id = 102
+  }
 
-#   agent {
-#     # Read 'Qemu guest agent' section, change to true only when ready
-#     enabled = false
-#   }
+  agent {
+    # Read 'Qemu guest agent' section, change to true only when ready
+    enabled = false
+  }
   
-#   # If agent is not enabled, the VM may not be able to shutdown properly, and may need to be forced off
-#   stop_on_destroy = true
+  # If agent is not enabled, the VM may not be able to shutdown properly, and may need to be forced off
+  stop_on_destroy = true
 
-#   # Network device configuration
-#   network_device {
-#     bridge = "lab1"
-#     firewall = true
-#   }
+  # Network device configuration
+  network_device {
+    bridge = "lab1"
+    firewall = true
+  }
 
-#   # Operating system settings
-#   operating_system {
-#     type = "l26"  # Linux (2.6 or later)
-#   }
+  # Operating system settings
+  operating_system {
+    type = "l26"  # Linux (2.6 or later)
+  }
 
-#   # TPM state configuration
-#   tpm_state {
-#     version = "v2.0"
-#   }
+  # TPM state configuration
+  tpm_state {
+    version = "v2.0"
+  }
 
-#   # Initialization block for cloud-init
-#   initialization {
-#     ip_config {
-#       ipv4 {
-#         address = "dhcp"
-#       }
-#     }
-#   }
+  # Initialization block for cloud-init
+  initialization {
+    ip_config {
+      ipv4 {
+        address = "dhcp"
+      }
+    }
+  }
 
-#   serial_device {}
-# }
+  serial_device {}
+}
 
-resource "proxmox_virtual_environment_firewall_rules" "inbound" {
+resource "proxmox_virtual_environment_vm" "MQTT-broker" {
+  name        = "MQTT-broker"
+  description = "Managed by Terraform"
+  tags        = ["terraform", "server"]
+
+  node_name = var.proxmox_host
+  vm_id     = 101
+
+   clone {
+    vm_id = 102
+  }
+
+  agent {
+    # Read 'Qemu guest agent' section, change to true only when ready
+    enabled = false
+  }
+  
+  # If agent is not enabled, the VM may not be able to shutdown properly, and may need to be forced off
+  stop_on_destroy = true
+
+  # Network device configuration
+  network_device {
+    bridge = "lab1"
+    firewall = true
+  }
+
+  # Operating system settings
+  operating_system {
+    type = "l26"  # Linux (2.6 or later)
+  }
+
+  # TPM state configuration
+  tpm_state {
+    version = "v2.0"
+  }
+
+  # Initialization block for cloud-init
+  initialization {
+    ip_config {
+      ipv4 {
+        address = "dhcp"
+      }
+    }
+  }
+
+  serial_device {}
+}
+
+resource "proxmox_virtual_environment_vm" "CoAP-server" {
+  name        = "CoAP-server"
+  description = "Managed by Terraform"
+  tags        = ["terraform", "server"]
+
+  node_name = var.proxmox_host
+  vm_id     = 103
+
+   clone {
+    vm_id = 102
+  }
+
+  agent {
+    # Read 'Qemu guest agent' section, change to true only when ready
+    enabled = false
+  }
+  
+  # If agent is not enabled, the VM may not be able to shutdown properly, and may need to be forced off
+  stop_on_destroy = true
+
+  # Network device configuration
+  network_device {
+    bridge = "lab1"
+    firewall = true
+  }
+
+  # Operating system settings
+  operating_system {
+    type = "l26"  # Linux (2.6 or later)
+  }
+
+  # TPM state configuration
+  tpm_state {
+    version = "v2.0"
+  }
+
+  # Initialization block for cloud-init
+  initialization {
+    ip_config {
+      ipv4 {
+        address = "dhcp"
+      }
+    }
+  }
+
+  serial_device {}
+}
+
+resource "proxmox_virtual_environment_vm" "File-server" {
+  name        = "File-server"
+  description = "Managed by Terraform"
+  tags        = ["terraform", "server"]
+
+  node_name = var.proxmox_host
+  vm_id     = 104
+
+   clone {
+    vm_id = 102
+  }
+
+  agent {
+    # Read 'Qemu guest agent' section, change to true only when ready
+    enabled = false
+  }
+  
+  # If agent is not enabled, the VM may not be able to shutdown properly, and may need to be forced off
+  stop_on_destroy = true
+
+  # Network device configuration
+  network_device {
+    bridge = "lab1"
+    firewall = true
+  }
+
+  # Operating system settings
+  operating_system {
+    type = "l26"  # Linux (2.6 or later)
+  }
+
+  # TPM state configuration
+  tpm_state {
+    version = "v2.0"
+  }
+
+  # Initialization block for cloud-init
+  initialization {
+    ip_config {
+      ipv4 {
+        address = "dhcp"
+      }
+    }
+  }
+
+  serial_device {}
+}
+
+resource "proxmox_virtual_environment_firewall_rules" "VPN-Security-Group" {
   depends_on = [
-    # proxmox_virtual_environment_vm.example,
+    proxmox_virtual_environment_vm.vpn-gateway,
     proxmox_virtual_environment_cluster_firewall_security_group.lab-net,
   ]
 
   node_name = var.proxmox_host
-  vm_id     = 109
+  vm_id     = proxmox_virtual_environment_vm.vpn-gateway.vm_id
+
+
+  rule {
+    security_group = proxmox_virtual_environment_cluster_firewall_security_group.lab-net.name
+    comment        = "Laboratory Network Segment"
+    iface          = "net0"
+  }
+}
+
+resource "proxmox_virtual_environment_firewall_rules" "MQTT-Security-Group" {
+  depends_on = [
+    proxmox_virtual_environment_vm.MQTT-broker,
+    proxmox_virtual_environment_cluster_firewall_security_group.lab-net,
+  ]
+
+  node_name = var.proxmox_host
+  vm_id     = proxmox_virtual_environment_vm.MQTT-broker.vm_id
+
+
+  rule {
+    security_group = proxmox_virtual_environment_cluster_firewall_security_group.lab-net.name
+    comment        = "Laboratory Network Segment"
+    iface          = "net0"
+  }
+}
+
+resource "proxmox_virtual_environment_firewall_rules" "CoAP-Security-Group" {
+  depends_on = [
+    proxmox_virtual_environment_vm.CoAP-server,
+    proxmox_virtual_environment_cluster_firewall_security_group.lab-net,
+  ]
+
+  node_name = var.proxmox_host
+  vm_id     = proxmox_virtual_environment_vm.CoAP-server.vm_id
+
+
+  rule {
+    security_group = proxmox_virtual_environment_cluster_firewall_security_group.lab-net.name
+    comment        = "Laboratory Network Segment"
+    iface          = "net0"
+  }
+}
+
+resource "proxmox_virtual_environment_firewall_rules" "File-Security-Group" {
+  depends_on = [
+    proxmox_virtual_environment_vm.File-server,
+    proxmox_virtual_environment_cluster_firewall_security_group.lab-net,
+  ]
+
+  node_name = var.proxmox_host
+  vm_id     = proxmox_virtual_environment_vm.File-server.vm_id
 
 
   rule {
