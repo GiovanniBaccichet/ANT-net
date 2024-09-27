@@ -13,23 +13,23 @@ provider "proxmox" {
   insecure = true
 }
 
-# resource "proxmox_virtual_environment_firewall_alias" "gateway" {
-#   name    = "gateway2"
-#   cidr    = "10.79.5.254"
-#   comment = "Gateway IP"
-# }
+resource "proxmox_virtual_environment_firewall_alias" "gateway" {
+  name    = "gateway"
+  cidr    = "10.79.5.254"
+  comment = "Gateway IP"
+}
 
-# resource "proxmox_virtual_environment_firewall_alias" "wildcard" {
-#   name    = "wildcard2"
-#   cidr    = "0.0.0.0/0"
-#   comment = "Wildcard CIDR"
-# }
+resource "proxmox_virtual_environment_firewall_alias" "wildcard" {
+  name    = "wildcard"
+  cidr    = "0.0.0.0/0"
+  comment = "Wildcard CIDR"
+}
 
-# resource "proxmox_virtual_environment_firewall_alias" "lab-net" {
-#   name    = "lab-net2"
-#   cidr    = "10.10.10.0/24"
-#   comment = "Lab Network"
-# }
+resource "proxmox_virtual_environment_firewall_alias" "lab-net" {
+  name    = "lab-net"
+  cidr    = "10.10.10.0/24"
+  comment = "Lab Network"
+}
 
 resource "proxmox_virtual_environment_cluster_firewall_security_group" "lab-net" {
   name    = "lab-net-test"
@@ -337,12 +337,12 @@ resource "proxmox_virtual_environment_firewall_options" "VPN-Firewall-Options" {
 
   dhcp          = true
   enabled       = true
-  ipfilter      = true
+  ipfilter      = false
   log_level_in  = "info"
   log_level_out = "info"
-  macfilter     = false
+  macfilter     = true
   ndp           = true
-  input_policy  = "ACCEPT"
+  input_policy  = "DROP"
   output_policy = "ACCEPT"
   radv          = true
 }
@@ -355,12 +355,12 @@ resource "proxmox_virtual_environment_firewall_options" "MQTT-Firewall-Options" 
 
   dhcp          = true
   enabled       = true
-  ipfilter      = true
+  ipfilter      = false
   log_level_in  = "info"
   log_level_out = "info"
-  macfilter     = false
+  macfilter     = true
   ndp           = true
-  input_policy  = "ACCEPT"
+  input_policy  = "DROP"
   output_policy = "ACCEPT"
   radv          = true
 }
@@ -373,12 +373,12 @@ resource "proxmox_virtual_environment_firewall_options" "CoAP-Firewall-Options" 
 
   dhcp          = true
   enabled       = true
-  ipfilter      = true
+  ipfilter      = false
   log_level_in  = "info"
   log_level_out = "info"
-  macfilter     = false
+  macfilter     = true
   ndp           = true
-  input_policy  = "ACCEPT"
+  input_policy  = "DROP"
   output_policy = "ACCEPT"
   radv          = true
 }
@@ -391,12 +391,12 @@ resource "proxmox_virtual_environment_firewall_options" "File-Firewall-Options" 
 
   dhcp          = true
   enabled       = true
-  ipfilter      = true
+  ipfilter      = false
   log_level_in  = "info"
   log_level_out = "info"
-  macfilter     = false
+  macfilter     = true
   ndp           = true
-  input_policy  = "ACCEPT"
+  input_policy  = "DROP"
   output_policy = "ACCEPT"
   radv          = true
 }
