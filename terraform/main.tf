@@ -13,23 +13,23 @@ provider "proxmox" {
   insecure = true
 }
 
-resource "proxmox_virtual_environment_firewall_alias" "gateway" {
-  name    = "gateway"
-  cidr    = "10.79.5.254"
-  comment = "Gateway IP"
-}
+# resource "proxmox_virtual_environment_firewall_alias" "gateway" {
+#   name    = "gateway"
+#   cidr    = "10.79.5.254"
+#   comment = "Gateway IP"
+# }
 
-resource "proxmox_virtual_environment_firewall_alias" "wildcard" {
-  name    = "wildcard"
-  cidr    = "0.0.0.0/0"
-  comment = "Wildcard CIDR"
-}
+# resource "proxmox_virtual_environment_firewall_alias" "wildcard" {
+#   name    = "wildcard"
+#   cidr    = "0.0.0.0/0"
+#   comment = "Wildcard CIDR"
+# }
 
-resource "proxmox_virtual_environment_firewall_alias" "lab-net" {
-  name    = "lab-net"
-  cidr    = "10.10.10.0/24"
-  comment = "Lab Network"
-}
+# resource "proxmox_virtual_environment_firewall_alias" "lab-net" {
+#   name    = "lab-net"
+#   cidr    = "10.10.10.0/24"
+#   comment = "Lab Network"
+# }
 
 resource "proxmox_virtual_environment_cluster_firewall_security_group" "lab-net" {
   name    = "lab-net-test"
@@ -93,6 +93,13 @@ resource "proxmox_virtual_environment_vm" "vpn-gateway" {
   network_device {
     bridge = "lab1"
     firewall = true
+  }
+
+  # Public facing network port
+    network_device {
+    bridge = "vmbr1"
+    firewall = true
+
   }
 
   # Operating system settings
@@ -270,6 +277,15 @@ resource "proxmox_virtual_environment_firewall_rules" "VPN-Security-Group" {
   node_name = var.proxmox_host
   vm_id     = proxmox_virtual_environment_vm.vpn-gateway.vm_id
 
+  # rule {
+  #   type = "in"
+  #   action = "ACCEPT"
+  #   comment = "Allow VPN traffic IN"
+  #   dest = "10.10.10.2"
+  #   dport = "443"
+  #   proto = "tcp"
+  #   log = "info"
+  # }
 
   rule {
     security_group = proxmox_virtual_environment_cluster_firewall_security_group.lab-net.name
