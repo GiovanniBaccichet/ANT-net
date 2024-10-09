@@ -13,6 +13,23 @@ provider "proxmox" {
   insecure = true
 }
 
+# resource "proxmox_virtual_environment_hardware_mapping_pci" "pcie-wan" {
+#   comment = "Port on the Right"
+#   name    = "pcie-wan"
+#   # The actual map of devices.
+#   map = [
+#     {
+#       comment = "WAN Port"
+#       id      = "8086:10c9"
+#       # This is an optional attribute, but causes a mapping to be incomplete when not defined.
+#       iommu_group = 33
+#       node        = "ant-net"
+#       path        = "0000:04:00.1"
+#     },
+#   ]
+#   mediated_devices = true
+# }
+
 # resource "proxmox_virtual_environment_firewall_alias" "gateway" {
 #   name    = "gateway"
 #   cidr    = "10.79.5.254"
@@ -32,7 +49,7 @@ provider "proxmox" {
 # }
 
 resource "proxmox_virtual_environment_cluster_firewall_security_group" "lab-net" {
-  name    = "lab-net-test"
+  name    = "lab-net"
   comment = "Laboratory Network Segment"
 
   rule {
@@ -70,12 +87,15 @@ resource "proxmox_virtual_environment_cluster_firewall_security_group" "lab-net"
 }
 
 resource "proxmox_virtual_environment_vm" "vpn-gateway" {
+
+  # depends_on = [ proxmox_virtual_environment_hardware_mapping_pci.pcie-wan ]
+
   name        = "VPN-gateway"
   description = "Managed by Terraform"
   tags        = ["terraform", "networking"]
 
   node_name = var.proxmox_host
-  vm_id     = 100
+  vm_id     = 110
 
    clone {
     vm_id = 102
@@ -95,12 +115,13 @@ resource "proxmox_virtual_environment_vm" "vpn-gateway" {
     firewall = true
   }
 
-  # Public facing network port
-    network_device {
-    bridge = "vmbr1"
-    firewall = true
-
-  }
+  # Public facing network card
+  hostpci {
+      device = "hostpci1"
+      # id = "0000:04:00.1"
+      mapping = proxmox_virtual_environment_hardware_mapping_pci.pcie-wan.name
+    }
+    
 
   # Operating system settings
   operating_system {
@@ -120,8 +141,6 @@ resource "proxmox_virtual_environment_vm" "vpn-gateway" {
       }
     }
   }
-
-  serial_device {}
 }
 
 resource "proxmox_virtual_environment_vm" "MQTT-broker" {
@@ -130,7 +149,7 @@ resource "proxmox_virtual_environment_vm" "MQTT-broker" {
   tags        = ["terraform", "server"]
 
   node_name = var.proxmox_host
-  vm_id     = 101
+  vm_id     = 111
 
    clone {
     vm_id = 102
@@ -168,8 +187,6 @@ resource "proxmox_virtual_environment_vm" "MQTT-broker" {
       }
     }
   }
-
-  serial_device {}
 }
 
 resource "proxmox_virtual_environment_vm" "CoAP-server" {
@@ -178,7 +195,7 @@ resource "proxmox_virtual_environment_vm" "CoAP-server" {
   tags        = ["terraform", "server"]
 
   node_name = var.proxmox_host
-  vm_id     = 103
+  vm_id     = 113
 
    clone {
     vm_id = 102
@@ -216,8 +233,6 @@ resource "proxmox_virtual_environment_vm" "CoAP-server" {
       }
     }
   }
-
-  serial_device {}
 }
 
 resource "proxmox_virtual_environment_vm" "File-server" {
@@ -226,7 +241,7 @@ resource "proxmox_virtual_environment_vm" "File-server" {
   tags        = ["terraform", "server"]
 
   node_name = var.proxmox_host
-  vm_id     = 104
+  vm_id     = 114
 
    clone {
     vm_id = 102
@@ -264,8 +279,6 @@ resource "proxmox_virtual_environment_vm" "File-server" {
       }
     }
   }
-
-  serial_device {}
 }
 
 resource "proxmox_virtual_environment_firewall_rules" "VPN-Security-Group" {
