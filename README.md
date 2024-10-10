@@ -64,10 +64,22 @@ Some manual steps are required in order to setup the infrastructure, since the T
 
 The Terraform Proxmox provider uses API Token Key authentication. Before starting we need to create a user and generate an API token for that user (more info [here](https://registry.terraform.io/providers/bpg/proxmox/latest/docs)):
 
-1. Create the user with: `pveum user add terraform@pve`
-2. Create a role for the user: `pveum role add Terraform -privs "Datastore.Allocate Datastore.AllocateSpace Datastore.AllocateTemplate Datastore.Audit Pool.Allocate Sys.Audit Sys.Console Sys.Modify SDN.Use VM.Allocate VM.Audit VM.Clone VM.Config.CDROM VM.Config.Cloudinit VM.Config.CPU VM.Config.Disk VM.Config.HWType VM.Config.Memory VM.Config.Network VM.Config.Options VM.Migrate VM.Monitor VM.PowerMgmt User.Modify"`
-3. Assign the role to the previously created user: `pveum aclmod / -user terraform@pve -role Terraform`
-4. Create an API token for the user: `pveum user token add terraform@pve provider --privsep=0`
+1. Create the user with: 
+   ```bash
+   pveum user add terraform@pve
+   ```
+2. Create a role for the user: 
+   ```bash
+   pveum role add Terraform -privs "Datastore.Allocate Datastore.AllocateSpace Datastore.AllocateTemplate Datastore.Audit Pool.Allocate Sys.Audit Sys.Console Sys.Modify SDN.Use VM.Allocate VM.Audit VM.Clone VM.Config.CDROM VM.Config.Cloudinit VM.Config.CPU VM.Config.Disk VM.Config.HWType VM.Config.Memory VM.Config.Network VM.Config.Options VM.Migrate VM.Monitor VM.PowerMgmt User.Modify"
+   ```
+3. Assign the role to the previously created user: 
+   ```bash
+   pveum aclmod / -user terraform@pve -role Terraform
+   ```
+4. Create an API token for the user: 
+   ```bash
+   pveum user token add terraform@pve provider --privsep=0
+   ```
 
 Alternatively run the `scripts/generate_token.sh` bash script.
 
