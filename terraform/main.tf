@@ -1,431 +1,65 @@
-terraform {
-  required_providers {
-    proxmox = {
-      source = "bpg/proxmox"
-      version = "0.65.0"
-    }
-  }
+# VM Modules
+
+module "vpn_gateway" {
+  source = "/modules/vm"
+  vm_name = "VPN-gateway"
+  vm_id = 110
+  clone_id = 102
+  tags = ["terraform", "networking"]
 }
 
-provider "proxmox" {
-  endpoint = var.api_url
-  api_token = var.api_token
-  insecure = true
+module "mqtt_broker" {
+  source = "/modules/vm"
+  vm_name = "MQTT-broker"
+  vm_id = 111
+  clone_id = 102
+  tags = ["terraform", "server"]
 }
 
-# resource "proxmox_virtual_environment_hardware_mapping_pci" "pcie-wan" {
-#   comment = "Port on the Right"
-#   name    = "pcie-wan"
-#   # The actual map of devices.
-#   map = [
-#     {
-#       comment = "WAN Port"
-#       id      = "8086:10c9"
-#       # This is an optional attribute, but causes a mapping to be incomplete when not defined.
-#       iommu_group = 33
-#       node        = "ant-net"
-#       path        = "0000:04:00.1"
-#     },
-#   ]
-#   mediated_devices = true
-# }
+module "coap_server" {
+  source = "/modules/vm"
+  vm_name = "CoAP-server"
+  vm_id = 113
+  clone_id = 102
+  tags = ["terraform", "server"]
+}
 
-# resource "proxmox_virtual_environment_firewall_alias" "gateway" {
-#   name    = "gateway"
-#   cidr    = "10.79.5.254"
-#   comment = "Gateway IP"
-# }
+module "file_server" {
+  source = "/modules/vm"
+  vm_name = "File-server"
+  vm_id = 114
+  clone_id = 102
+  tags = ["terraform", "server"]
+}
 
-# resource "proxmox_virtual_environment_firewall_alias" "wildcard" {
-#   name    = "wildcard"
-#   cidr    = "0.0.0.0/0"
-#   comment = "Wildcard CIDR"
-# }
+# Firewall Modules
 
-# resource "proxmox_virtual_environment_firewall_alias" "lab-net" {
-#   name    = "lab-net"
-#   cidr    = "10.10.10.0/24"
-#   comment = "Lab Network"
-# }
-
-resource "proxmox_virtual_environment_cluster_firewall_security_group" "lab-net" {
-  name    = "lab-net"
+module "lab_net_firewall" {
+  source = "./modules/firewall"
+  security_group_name = "lab-net"
   comment = "Laboratory Network Segment"
-
-  rule {
-    type    = "in"
-    action  = "ACCEPT"
-    comment = "Allow local traffic"
-    dest    = "lab-net"
-    log     = "info"
-  }
-
-  rule {
-    type    = "out"
-    action  = "ACCEPT"
-    comment = "Allow local traffic"
-    dest    = "lab-net"
-    log     = "info"
-  }
-
-  rule {
-    type    = "out"
-    action  = "ACCEPT"
-    comment = "Allow traffic to the gateway"
-    dest    = "gateway"
-    log     = "info"
-  }
-
-  rule {
-    type    = "out"
-    action  = "DROP"
-    comment = "Default deny all outbound traffic"
-    dest    = "wildcard"
-    log     = "info"
-  }
-  
 }
 
-resource "proxmox_virtual_environment_vm" "vpn-gateway" {
-
-  # depends_on = [ proxmox_virtual_environment_hardware_mapping_pci.pcie-wan ]
-
-  name        = "VPN-gateway"
-  description = "Managed by Terraform"
-  tags        = ["terraform", "networking"]
-
-  node_name = var.proxmox_host
-  vm_id     = 110
-
-   clone {
-    vm_id = 102
-  }
-
-  agent {
-    # Read 'Qemu guest agent' section, change to true only when ready
-    enabled = false
-  }
-  
-  # If agent is not enabled, the VM may not be able to shutdown properly, and may need to be forced off
-  stop_on_destroy = true
-
-  # Network device configuration
-  network_device {
-    bridge = "lab1"
-    firewall = true
-  }
-
-  # Public facing network card
-  hostpci {
-      device = "hostpci1"
-      # id = "0000:04:00.1"
-      mapping = proxmox_virtual_environment_hardware_mapping_pci.pcie-wan.name
-    }
-    
-
-  # Operating system settings
-  operating_system {
-    type = "l26"  # Linux (2.6 or later)
-  }
-
-  # TPM state configuration
-  tpm_state {
-    version = "v2.0"
-  }
-
-  # Initialization block for cloud-init
-  initialization {
-    ip_config {
-      ipv4 {
-        address = "dhcp"
-      }
-    }
-  }
+module "vpn_firewall_options" {
+  source = "/modules/firewall"
+  node_name = module.vpn_gateway.node_name
+  vm_id = module.vpn_gateway.vm_id
 }
 
-resource "proxmox_virtual_environment_vm" "MQTT-broker" {
-  name        = "MQTT-broker"
-  description = "Managed by Terraform"
-  tags        = ["terraform", "server"]
-
-  node_name = var.proxmox_host
-  vm_id     = 111
-
-   clone {
-    vm_id = 102
-  }
-
-  agent {
-    # Read 'Qemu guest agent' section, change to true only when ready
-    enabled = false
-  }
-  
-  # If agent is not enabled, the VM may not be able to shutdown properly, and may need to be forced off
-  stop_on_destroy = true
-
-  # Network device configuration
-  network_device {
-    bridge = "lab1"
-    firewall = true
-  }
-
-  # Operating system settings
-  operating_system {
-    type = "l26"  # Linux (2.6 or later)
-  }
-
-  # TPM state configuration
-  tpm_state {
-    version = "v2.0"
-  }
-
-  # Initialization block for cloud-init
-  initialization {
-    ip_config {
-      ipv4 {
-        address = "dhcp"
-      }
-    }
-  }
+module "mqtt_firewall_options" {
+  source = "/modules/firewall"
+  node_name = module.mqtt_broker.node_name
+  vm_id = module.mqtt_broker.vm_id
 }
 
-resource "proxmox_virtual_environment_vm" "CoAP-server" {
-  name        = "CoAP-server"
-  description = "Managed by Terraform"
-  tags        = ["terraform", "server"]
-
-  node_name = var.proxmox_host
-  vm_id     = 113
-
-   clone {
-    vm_id = 102
-  }
-
-  agent {
-    # Read 'Qemu guest agent' section, change to true only when ready
-    enabled = false
-  }
-  
-  # If agent is not enabled, the VM may not be able to shutdown properly, and may need to be forced off
-  stop_on_destroy = true
-
-  # Network device configuration
-  network_device {
-    bridge = "lab1"
-    firewall = true
-  }
-
-  # Operating system settings
-  operating_system {
-    type = "l26"  # Linux (2.6 or later)
-  }
-
-  # TPM state configuration
-  tpm_state {
-    version = "v2.0"
-  }
-
-  # Initialization block for cloud-init
-  initialization {
-    ip_config {
-      ipv4 {
-        address = "dhcp"
-      }
-    }
-  }
+module "coap_firewall_options" {
+  source = "/modules/firewall"
+  node_name = module.coap_server.node_name
+  vm_id = module.coap_server.vm_id
 }
 
-resource "proxmox_virtual_environment_vm" "File-server" {
-  name        = "File-server"
-  description = "Managed by Terraform"
-  tags        = ["terraform", "server"]
-
-  node_name = var.proxmox_host
-  vm_id     = 114
-
-   clone {
-    vm_id = 102
-  }
-
-  agent {
-    # Read 'Qemu guest agent' section, change to true only when ready
-    enabled = false
-  }
-  
-  # If agent is not enabled, the VM may not be able to shutdown properly, and may need to be forced off
-  stop_on_destroy = true
-
-  # Network device configuration
-  network_device {
-    bridge = "lab1"
-    firewall = true
-  }
-
-  # Operating system settings
-  operating_system {
-    type = "l26"  # Linux (2.6 or later)
-  }
-
-  # TPM state configuration
-  tpm_state {
-    version = "v2.0"
-  }
-
-  # Initialization block for cloud-init
-  initialization {
-    ip_config {
-      ipv4 {
-        address = "dhcp"
-      }
-    }
-  }
-}
-
-resource "proxmox_virtual_environment_firewall_rules" "VPN-Security-Group" {
-  depends_on = [
-    proxmox_virtual_environment_vm.vpn-gateway,
-    proxmox_virtual_environment_cluster_firewall_security_group.lab-net,
-  ]
-
-  node_name = var.proxmox_host
-  vm_id     = proxmox_virtual_environment_vm.vpn-gateway.vm_id
-
-  # rule {
-  #   type = "in"
-  #   action = "ACCEPT"
-  #   comment = "Allow VPN traffic IN"
-  #   dest = "10.10.10.2"
-  #   dport = "443"
-  #   proto = "tcp"
-  #   log = "info"
-  # }
-
-  rule {
-    security_group = proxmox_virtual_environment_cluster_firewall_security_group.lab-net.name
-    comment        = "Laboratory Network Segment"
-    iface          = "net0"
-  }
-}
-
-resource "proxmox_virtual_environment_firewall_rules" "MQTT-Security-Group" {
-  depends_on = [
-    proxmox_virtual_environment_vm.MQTT-broker,
-    proxmox_virtual_environment_cluster_firewall_security_group.lab-net,
-  ]
-
-  node_name = var.proxmox_host
-  vm_id     = proxmox_virtual_environment_vm.MQTT-broker.vm_id
-
-
-  rule {
-    security_group = proxmox_virtual_environment_cluster_firewall_security_group.lab-net.name
-    comment        = "Laboratory Network Segment"
-    iface          = "net0"
-  }
-}
-
-resource "proxmox_virtual_environment_firewall_rules" "CoAP-Security-Group" {
-  depends_on = [
-    proxmox_virtual_environment_vm.CoAP-server,
-    proxmox_virtual_environment_cluster_firewall_security_group.lab-net,
-  ]
-
-  node_name = var.proxmox_host
-  vm_id     = proxmox_virtual_environment_vm.CoAP-server.vm_id
-
-
-  rule {
-    security_group = proxmox_virtual_environment_cluster_firewall_security_group.lab-net.name
-    comment        = "Laboratory Network Segment"
-    iface          = "net0"
-  }
-}
-
-resource "proxmox_virtual_environment_firewall_rules" "File-Security-Group" {
-  depends_on = [
-    proxmox_virtual_environment_vm.File-server,
-    proxmox_virtual_environment_cluster_firewall_security_group.lab-net,
-  ]
-
-  node_name = var.proxmox_host
-  vm_id     = proxmox_virtual_environment_vm.File-server.vm_id
-
-
-  rule {
-    security_group = proxmox_virtual_environment_cluster_firewall_security_group.lab-net.name
-    comment        = "Laboratory Network Segment"
-    iface          = "net0"
-  }
-}
-
-resource "proxmox_virtual_environment_firewall_options" "VPN-Firewall-Options" {
-  depends_on = [proxmox_virtual_environment_vm.vpn-gateway]
-
-  node_name = proxmox_virtual_environment_vm.vpn-gateway.node_name
-  vm_id     = proxmox_virtual_environment_vm.vpn-gateway.vm_id
-
-  dhcp          = true
-  enabled       = true
-  ipfilter      = false
-  log_level_in  = "info"
-  log_level_out = "info"
-  macfilter     = true
-  ndp           = true
-  input_policy  = "DROP"
-  output_policy = "ACCEPT"
-  radv          = true
-}
-
-resource "proxmox_virtual_environment_firewall_options" "MQTT-Firewall-Options" {
-  depends_on = [proxmox_virtual_environment_vm.MQTT-broker]
-
-  node_name = proxmox_virtual_environment_vm.MQTT-broker.node_name
-  vm_id     = proxmox_virtual_environment_vm.MQTT-broker.vm_id
-
-  dhcp          = true
-  enabled       = true
-  ipfilter      = false
-  log_level_in  = "info"
-  log_level_out = "info"
-  macfilter     = true
-  ndp           = true
-  input_policy  = "DROP"
-  output_policy = "ACCEPT"
-  radv          = true
-}
-
-resource "proxmox_virtual_environment_firewall_options" "CoAP-Firewall-Options" {
-  depends_on = [proxmox_virtual_environment_vm.CoAP-server]
-
-  node_name = proxmox_virtual_environment_vm.CoAP-server.node_name
-  vm_id     = proxmox_virtual_environment_vm.CoAP-server.vm_id
-
-  dhcp          = true
-  enabled       = true
-  ipfilter      = false
-  log_level_in  = "info"
-  log_level_out = "info"
-  macfilter     = true
-  ndp           = true
-  input_policy  = "DROP"
-  output_policy = "ACCEPT"
-  radv          = true
-}
-
-resource "proxmox_virtual_environment_firewall_options" "File-Firewall-Options" {
-  depends_on = [proxmox_virtual_environment_vm.File-server]
-
-  node_name = proxmox_virtual_environment_vm.File-server.node_name
-  vm_id     = proxmox_virtual_environment_vm.File-server.vm_id
-
-  dhcp          = true
-  enabled       = true
-  ipfilter      = false
-  log_level_in  = "info"
-  log_level_out = "info"
-  macfilter     = true
-  ndp           = true
-  input_policy  = "DROP"
-  output_policy = "ACCEPT"
-  radv          = true
+module "file_firewall_options" {
+  source = "/modules/firewall"
+  node_name = module.file_server.node_name
+  vm_id = module.file_server.vm_id
 }
