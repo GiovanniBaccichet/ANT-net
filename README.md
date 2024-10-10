@@ -81,7 +81,13 @@ The Terraform Proxmox provider uses API Token Key authentication. Before startin
    pveum user token add terraform@pve provider --privsep=0
    ```
 
-Alternatively run the `scripts/generate_token.sh` bash script.
+Alternatively run the `scripts/generate__api_token.sh` bash script.
+
+The `api_token` that the provider accepts is in the form:
+
+```json
+api_token = "terraform@pve!provider=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+```
 
 ### Installation
 
