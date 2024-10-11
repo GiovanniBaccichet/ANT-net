@@ -58,7 +58,7 @@ Some manual steps are required in order to setup the infrastructure, since the T
 
 1. Datacenter -> SDN -> Zones: Add - Simple: ID = `labnet`
 2. Datacenter -> SDN -> VNets: Create: Name: `labvnet` Zone: `labnet`
-   1. Subnets: Create: `10.10.10.0/24` Gateway: `10.10.10.1`
+   1. Subnets: Create: `10.10.10.0/24` Gateway: `10.10.10.1` SNAT: Enable
 
 ### Prerequisites
 
