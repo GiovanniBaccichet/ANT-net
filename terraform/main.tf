@@ -69,18 +69,23 @@ module "lab_net_firewall" {
 
 # Firewall options
 
-
 # module "vpn_firewall_options" {
-#   source = "./modules/firewall"
+#   source = "./modules/firewall_options"
+#   proxmox_host = var.proxmox_host
+#   vm_id = 110
 #   security_group_name = "vpn-firewall"
 #   comment = "VPN Gateway Firewall Options"
+#   depends_on = [ module.vpn_gateway ]
 # }
 
-# module "mqtt_firewall_options" {
-#   source = "./modules/firewall"
-#   security_group_name = "mqtt-firewall"
-#   comment = "MQTT Broker Firewall Options"
-# }
+module "mqtt_firewall_options" {
+  source = "./modules/firewall_options"
+  proxmox_host = var.proxmox_host
+  vm_id = 111
+  security_group_name = "vpn-firewall"
+  comment = "MQTT Broker Firewall Options"
+  depends_on = [ module.mqtt_broker, module.lab_net_firewall ]
+}
 
 # module "coap_firewall_options" {
 #   source = "./modules/firewall"
