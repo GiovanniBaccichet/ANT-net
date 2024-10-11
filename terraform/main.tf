@@ -82,7 +82,7 @@ module "mqtt_firewall_options" {
   source = "./modules/firewall_options"
   proxmox_host = var.proxmox_host
   vm_id = 111
-  security_group_name = "vpn-firewall"
+  security_group_name = "labvnet"
   comment = "MQTT Broker Firewall Options"
   depends_on = [ module.mqtt_broker, module.lab_net_firewall ]
 }
