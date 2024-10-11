@@ -56,9 +56,11 @@ Terraform, Packer.
 
 Some manual steps are required in order to setup the infrastructure, since the Terraform Proxmox plugin does not support the whole set of APIs that the hypervisor provides.
 
-1. Datacenter -> SDN -> Zones: Add - Simple: ID = `labnet`
-2. Datacenter -> SDN -> VNets: Create: Name: `labvnet` Zone: `labnet`
+1. Run `scripts/enable_dhcp_ipam.sh` script in order to allow Proxmox to assign the DHCP to the internal network, more on this [here](https://pve.proxmox.com/pve-docs/chapter-pvesdn.html#pvesdn_install_dhcp_ipam).
+2. Datacenter -> SDN -> Zones: Add - Simple: ID = `labnet`
+3. Datacenter -> SDN -> VNets: Create: Name: `labvnet` Zone: `labnet`
    1. Subnets: Create: `10.10.10.0/24` Gateway: `10.10.10.1` SNAT: Enable
+4. SND -> Apply
 
 ### Prerequisites
 
