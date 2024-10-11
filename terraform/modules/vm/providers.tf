@@ -6,9 +6,3 @@ terraform {
     }
   }
 }
-
-provider "proxmox" {
-  endpoint  = var.api_url
-  api_token = var.api_token
-  insecure  = true
-}

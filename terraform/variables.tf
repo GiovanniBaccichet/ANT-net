@@ -16,16 +16,6 @@ variable "template_name" {
   default = "ubuntu-2204-template"
 }
 
-#Establish which nic you would like to utilize
-variable "nic_name" {
-  default = "vmbr<number>"
-}
-
-#Establish the VLAN you'd like to use
-variable "vlan_num" {
-  default = "place_vlan_number_here"
-}
-
 #Blank var for use by terraform.tfvars
 variable "api_token" {
 }

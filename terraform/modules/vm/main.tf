@@ -17,7 +17,7 @@ resource "proxmox_virtual_environment_vm" "this" {
   stop_on_destroy = true
 
   network_device {
-    bridge  = "lab1"
+    bridge  = "labvnet"
     firewall = true
   }
 
