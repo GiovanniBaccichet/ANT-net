@@ -84,17 +84,23 @@ module "mqtt_firewall_options" {
   vm_id = 111
   security_group_name = "labvnet"
   comment = "MQTT Broker Firewall Options"
+  depends_on = [ module.coap_server, module.lab_net_firewall ]
+}
+
+module "coap_firewall_options" {
+  source = "./modules/firewall_options"
+  proxmox_host = var.proxmox_host
+  vm_id = 112
+  security_group_name = "labvnet"
+  comment = "CoAP Broker Firewall Options"
   depends_on = [ module.mqtt_broker, module.lab_net_firewall ]
 }
 
-# module "coap_firewall_options" {
-#   source = "./modules/firewall"
-#   security_group_name = "coap-firewall"
-#   comment = "CoAP Server Firewall Options"
-# }
-
-# module "file_firewall_options" {
-#   source = "./modules/firewall"
-#   security_group_name = "file-firewall"
-#   comment = "File Server Firewall Options"
-# }
+module "file_firewall_options" {
+  source = "./modules/firewall_options"
+  proxmox_host = var.proxmox_host
+  vm_id = 113
+  security_group_name = "labvnet"
+  comment = "File Server Firewall Options"
+  depends_on = [ module.file_server, module.lab_net_firewall ]
+}
