@@ -9,40 +9,65 @@ module "vpn_gateway" {
   tags = ["terraform", "networking"]
 }
 
-# module "mqtt_broker" {
-#   source = "./modules/vm"
-#   vm_name = "MQTT-broker"
-#   vm_id = 111
-#   clone_id = 102
-#   proxmox_host = var.proxmox_host
-#   tags = ["terraform", "server"]
-# }
+module "mqtt_broker" {
+  source = "./modules/vm"
+  vm_name = "MQTT-broker"
+  vm_id = 111
+  clone_id = 999
+  proxmox_host = var.proxmox_host
+  tags = ["terraform", "server"]
+}
 
-# module "coap_server" {
-#   source = "./modules/vm"
-#   vm_name = "CoAP-server"
-#   vm_id = 113
-#   clone_id = 102
-#   proxmox_host = var.proxmox_host
-#   tags = ["terraform", "server"]
-# }
+module "coap_server" {
+  source = "./modules/vm"
+  vm_name = "CoAP-server"
+  vm_id = 112
+  clone_id = 999
+  proxmox_host = var.proxmox_host
+  tags = ["terraform", "server"]
+}
 
-# module "file_server" {
-#   source = "./modules/vm"
-#   vm_name = "File-server"
-#   vm_id = 114
-#   clone_id = 102
-#   proxmox_host = var.proxmox_host
-#   tags = ["terraform", "server"]
-# }
+module "file_server" {
+  source = "./modules/vm"
+  vm_name = "File-server"
+  vm_id = 113
+  clone_id = 999
+  proxmox_host = var.proxmox_host
+  tags = ["terraform", "server"]
+}
+
+# Network Aliases
+
+module "firewall_alias_wildcard" {
+  source = "./modules/firewall_aliases"
+  alias_name = "wildcard"
+  alias_cidr = "0.0.0.0/0"
+  alias_comment = "Wildcard"
+}
+
+module "firewall_alias_gateway" {
+  source = "./modules/firewall_aliases"
+  alias_name = "gateway"
+  alias_cidr = "10.10.10.1"
+  alias_comment = "Gateway"
+}
+
+module "firewall_alias_labvnet" {
+  source = "./modules/firewall_aliases"
+  alias_name = "labvnet"
+  alias_cidr = "10.10.10.0/24"
+  alias_comment = "Lab Virtual Network"
+}
 
 # Firewall Modules
 
-# module "lab_net_firewall" {
-#   source = "./modules/firewall"
-#   security_group_name = "lab-net"
-#   comment = "Laboratory Network Segment"
-# }
+module "lab_net_firewall" {
+  source = "./modules/firewall"
+  security_group_name = "labvnet"
+  comment = "Laboratory Network Segment"
+}
+
+# Firewall options
 
 
 # module "vpn_firewall_options" {

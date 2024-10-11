@@ -8,10 +8,12 @@ resource "proxmox_virtual_environment_vm" "this" {
 
   clone {
     vm_id = var.clone_id
+    full = false
+    retries = 3
   }
 
   agent {
-    enabled = false
+    enabled = true
   }
 
   stop_on_destroy = true
