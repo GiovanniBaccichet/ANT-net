@@ -4,6 +4,7 @@ module "vpn_gateway" {
   source = "./modules/vm"
   vm_name = "VPN-gateway"
   vm_id = 110
+  vm_ip = "10.10.10.10"
   clone_id = 999
   proxmox_host = var.proxmox_host
   tags = ["terraform", "networking"]
@@ -13,6 +14,7 @@ module "mqtt_broker" {
   source = "./modules/vm"
   vm_name = "MQTT-broker"
   vm_id = 111
+  vm_ip = "10.10.10.11"
   clone_id = 999
   proxmox_host = var.proxmox_host
   tags = ["terraform", "server"]
@@ -22,6 +24,7 @@ module "coap_server" {
   source = "./modules/vm"
   vm_name = "CoAP-server"
   vm_id = 112
+  vm_ip = "10.10.10.12"
   clone_id = 999
   proxmox_host = var.proxmox_host
   tags = ["terraform", "server"]
@@ -31,6 +34,7 @@ module "file_server" {
   source = "./modules/vm"
   vm_name = "File-server"
   vm_id = 113
+  vm_ip = "10.10.10.13"
   clone_id = 999
   proxmox_host = var.proxmox_host
   tags = ["terraform", "server"]

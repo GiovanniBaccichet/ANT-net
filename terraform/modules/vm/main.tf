@@ -34,7 +34,8 @@ resource "proxmox_virtual_environment_vm" "this" {
   initialization {
     ip_config {
       ipv4 {
-        address = "dhcp"
+        address = var.vm_ip
+        gateway = "10.10.10.1"
       }
     }
   }
