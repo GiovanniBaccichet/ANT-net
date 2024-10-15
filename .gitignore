@@ -286,4 +286,8 @@ terraform.rc
 .history
 .ionide
 
+# SSH Keys
+
+ssh/*
+
 # End of https://www.toptal.com/developers/gitignore/api/macos,terraform,visualstudiocode,python,packer
