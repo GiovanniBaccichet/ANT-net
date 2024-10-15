@@ -26,18 +26,15 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
+ANT-Net is a self deployable virtual infrastructure that hosts different services that are used in different courses at Politecnico di Milano. In particular it hosts:
+- VPN Gateway
+- MQTT Broker
+- CoAP Server
+- File Server + Sensor Network
+
+The architecture can be seen in the image below, and concerns network segments that are con
+
 ![alt text](images/proxmox-infra.png)
-
-There are many great README templates available on GitHub; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
-
-Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should implement DRY principles to the rest of your life :smile:
-
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all the people have contributed to expanding this template!
-
-Use the `BLANK_README.md` to get started.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -91,6 +88,25 @@ The `api_token` that the provider accepts is in the form:
 api_token = "terraform@pve!provider=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ```
 
+### Network
+
+The Proxmox Terraform provider we are using, despite being the one with the most features wrt API support, does not fully support the newly introduced SDN functionality of Proxmox (>= 8.0). For this reason we are using a bash script that leverages the `pvesh` command, a shell interface for the Proxmox VE API, more on that [here](https://pve.proxmox.com/pve-docs/pvesh.1.html).
+
+The script can be found in `scripts/network_setup.sh`, but here is a short comment to better understand what it does:
+
+1. Create a **simple zone**: 
+   ```bash
+   pvesh create /cluster/sdn/zones --type simple --zone "labnet"
+   ```
+2. Create a **Virtual Network** within the previously created zone:
+   ```bash
+   pvesh create /cluster/sdn/vnets --vnet "labvnet" --zone "labnet"
+   ```
+3. Create a **subnet** for that Virtual Network:
+   ```bash
+   pvesh create /cluster/sdn/vnets/labvnet/subnets --subnet "10.10.10.0/24" --type "subnet" --gateway "10.10.10.1" --snat true --dhcp-range start-address=10.10.10.10,end-address=10.10.10.254
+   ```
+
 ### Installation
 
 
@@ -113,13 +129,14 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
-- [x] Add Changelog
-- [x] Add back to top links
-- [ ] Add Additional Templates w/ Examples
-- [ ] Add "components" document to easily copy & paste sections of the readme
-- [ ] Multi-language Support
-    - [ ] Chinese
-    - [ ] Spanish
+- [x] Deploy VMs
+- [x] Deploy firewall rules 
+- [ ] Provision VMs
+  - [ ] VPN Gateway
+  - [ ] MQTT Broker
+  - [ ] CoAP Server
+  - [ ] File Server
+- [ ] Stress test the infrastructure
 
 See the [open issues](https://github.com/GiovanniBaccichet/ANT-net/issues) for a full list of proposed features (and known issues).
 
@@ -154,9 +171,9 @@ Distributed under the GPLv3 License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
+Giovanni Baccichet - giovanni.baccichet@polimi.it
 
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
+Project Link: [https://github.com/GiovanniBaccichet/ANT-Net](https://github.com/GiovanniBaccichet/ANT-Net)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
