@@ -9,6 +9,9 @@ DHCP_START=10.10.10.10
 DHCP_END=10.10.10.254
 BRIDGE="vmbr0"
 
+echo "[!] Installing dnsmasq"
+apt install -y dnsmasq && systemctl disable --now dnsmasq
+
 echo "[!] Creating Zone"
 pvesh create /cluster/sdn/zones --type simple --zone $ZONE_NAME && \
 
