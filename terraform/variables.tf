@@ -4,6 +4,10 @@ variable "proxmox_host" {
   default = "mr-potato"
 }
 
+variable "proxmox_host_ip" {
+  default = "10.79.5.250"
+}
+
 #Provide the url of the host you would like the API to communicate on.
 #It is safe to default to setting this as the URL for what you used
 #as your `proxmox_host`, although they can be different
