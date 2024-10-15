@@ -21,12 +21,27 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+# Prompt the user to disable SSH password authentication
+echo
+read -p "Do you want to disable SSH password authentication? (y/n): " disable_auth
+
+if [[ "$disable_auth" =~ ^[Yy]$ ]]; then
+    echo "Disabling SSH password authentication..."
+    
+    # Disable SSH password authentication
+    ssh -i "$SSH_KEY_PATH" root@"$PROXMOX_IP" "sed -i 's/^#*PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config && systemctl restart sshd"
+
+    echo "SSH password authentication has been disabled."
+else
+    echo "SSH password authentication remains enabled."
+fi
+
 # Execute commands on the Proxmox server
 output=$(ssh -i "$SSH_KEY_PATH" -T root@"$PROXMOX_IP" << 'EOF'
-pveum user add terraform10@pve && \
-pveum role add Terraform10 -privs "Datastore.Allocate Datastore.AllocateSpace Datastore.AllocateTemplate Datastore.Audit Pool.Allocate Sys.Audit Sys.Console Sys.Modify SDN.Use VM.Allocate VM.Audit VM.Clone VM.Config.CDROM VM.Config.Cloudinit VM.Config.CPU VM.Config.Disk VM.Config.HWType VM.Config.Memory VM.Config.Network VM.Config.Options VM.Migrate VM.Monitor VM.PowerMgmt User.Modify" && \
-pveum aclmod / -user terraform10@pve -role Terraform6 && \
-pveum user token add terraform10@pve provider --privsep=0
+pveum user add terraform11@pve && \
+pveum role add Terraform11 -privs "Datastore.Allocate Datastore.AllocateSpace Datastore.AllocateTemplate Datastore.Audit Pool.Allocate Sys.Audit Sys.Console Sys.Modify SDN.Use VM.Allocate VM.Audit VM.Clone VM.Config.CDROM VM.Config.Cloudinit VM.Config.CPU VM.Config.Disk VM.Config.HWType VM.Config.Memory VM.Config.Network VM.Config.Options VM.Migrate VM.Monitor VM.PowerMgmt User.Modify" && \
+pveum aclmod / -user terraform11@pve -role Terraform6 && \
+pveum user token add terraform11@pve provider --privsep=0
 EOF
 )
 
