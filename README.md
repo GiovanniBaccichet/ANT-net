@@ -106,6 +106,10 @@ The script can be found in `scripts/network_setup.sh`, but here is a short comme
    ```bash
    pvesh create /cluster/sdn/vnets/labvnet/subnets --subnet "10.10.10.0/24" --type "subnet" --gateway "10.10.10.1" --snat true --dhcp-range start-address=10.10.10.10,end-address=10.10.10.254
    ```
+4. Apply SDN controller changes and reload:
+   ```bash
+   pvesh set /cluster/sdn
+   ```
 
 ### Installation
 
@@ -129,6 +133,8 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
+- [x] Automatically configure networking
+- [x] Automatically generate API Token
 - [x] Deploy VMs
 - [x] Deploy firewall rules 
 - [ ] Provision VMs
