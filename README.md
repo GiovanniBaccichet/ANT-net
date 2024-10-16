@@ -98,7 +98,7 @@ The script can be found in `scripts/network_setup.sh`, but here is a short comme
 
 1. Create a **simple zone**: 
    ```bash
-   pvesh create /cluster/sdn/zones --type simple --zone "labnet"
+   pvesh create /cluster/sdn/zones --type simple --zone "labnet" --dhcp dnsmasq
    ```
 2. Create a **Virtual Network** within the previously created zone:
    ```bash
@@ -112,6 +112,8 @@ The script can be found in `scripts/network_setup.sh`, but here is a short comme
    ```bash
    pvesh set /cluster/sdn
    ```
+
+Simple Zones are explained into detail [here](https://pve.proxmox.com/wiki/Setup_Simple_Zone_With_SNAT_and_DHCP).
 
 ### Installation
 
