@@ -98,7 +98,7 @@ The script can be found in `scripts/network_setup.sh`, but here is a short comme
 
 1. Create a **simple zone**: 
    ```bash
-   pvesh create /cluster/sdn/zones --type simple --zone "labnet" --dhcp dnsmasq
+   pvesh create /cluster/sdn/zones --type simple --zone "labnet" --dhcp "dnsmasq" --ipam "pve"
    ```
 2. Create a **Virtual Network** within the previously created zone:
    ```bash
