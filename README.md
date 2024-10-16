@@ -88,6 +88,8 @@ The `api_token` that the provider accepts is in the form:
 api_token = "terraform@pve!provider=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ```
 
+Inside `terraform/terraform.tfvars` put the `api_token = "terraform@pve!provider=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"`
+
 ### Network
 
 The Proxmox Terraform provider we are using, despite being the one with the most features wrt API support, does not fully support the newly introduced SDN functionality of Proxmox (>= 8.0). For this reason we are using a bash script that leverages the `pvesh` command, a shell interface for the Proxmox VE API, more on that [here](https://pve.proxmox.com/pve-docs/pvesh.1.html).
