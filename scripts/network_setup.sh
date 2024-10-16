@@ -13,7 +13,7 @@ echo "[!] Installing dnsmasq"
 apt install -y dnsmasq && systemctl disable --now dnsmasq
 
 echo "[!] Creating Zone"
-pvesh create /cluster/sdn/zones --type simple --zone $ZONE_NAME && \
+pvesh create /cluster/sdn/zones --type simple --zone $ZONE_NAME --dhcp dnsmasq && \
 
 echo "[!] Creating Virtual Network"
 pvesh create /cluster/sdn/vnets --vnet $VNET_NAME --zone $ZONE_NAME && \

@@ -6,10 +6,6 @@ variable "vm_id" {
   description = "The ID of the VM"
 }
 
-variable "vm_ip" {
-  description = "Local IP address of the VM"
-}
-
 variable "clone_id" {
   description = "The ID of the base VM to clone"
 }
