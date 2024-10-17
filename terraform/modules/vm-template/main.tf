@@ -14,8 +14,8 @@ resource "proxmox_virtual_environment_vm" "this" {
   stop_on_destroy = true
 
   cpu {
-    cores        = 4
-    type         = "x86-64-v2-AES"  # recommended for modern CPUs
+    cores = 4
+    type  = "x86-64-v2-AES" # recommended for modern CPUs
   }
 
   memory {
@@ -27,42 +27,32 @@ resource "proxmox_virtual_environment_vm" "this" {
     datastore_id = "local-lvm"
     file_id      = proxmox_virtual_environment_download_file.latest_ubuntu_24_noble_qcow2_img.id
     interface    = "scsi0"
-    size = 20
+    size         = 20
   }
 
   initialization {
-    # ip_config {
-    #   ipv4 {
-    #     address = "dhcp"
-    #   }
-    # }
-
     user_account {
       username = "antlab"
       keys     = [trimspace(data.local_file.ssh_public_key.content)]
-      password = "antlab"
-    #   password = random_password.ubuntu_vm_password.result
+      #   password = "antlab"
+      password = random_password.ubuntu_vm_password.result
     }
   }
-
-#   network_device {
-#     bridge = "vmbr0"
-#   }
 
   operating_system {
     type = "l26"
   }
 
-  template = true
+  template = false
 
   serial_device {}
 }
 
 resource "proxmox_virtual_environment_download_file" "latest_ubuntu_24_noble_qcow2_img" {
-  content_type = "iso"
-  datastore_id = "local"
-  node_name    = var.proxmox_host
-  url          = "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
+  content_type        = "iso"
+  datastore_id        = "local"
+  node_name           = var.proxmox_host
+  url                 = "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
   overwrite_unmanaged = true
 }
 

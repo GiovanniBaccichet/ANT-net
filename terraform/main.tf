@@ -28,39 +28,40 @@ module "vm_template" {
   proxmox_host = var.proxmox_host
 }
 
-# resource "null_resource" "convert_to_template" {
-#   depends_on = [ module.vm_template ]
-#   connection {
-#     type        = "ssh"
-#     host        = var.proxmox_host_ip   # Replace with your hypervisor's IP
-#     user        = "root"        # The username for SSH access
-#     private_key = file("~/.ssh/ant_net") # Use your SSH private key
-#   }
-#   # After VM is created, run the startup and wait for it
-#   provisioner "remote-exec" {
-#     inline = [
-#       "qm start 9000",
-#       "sleep 60",
-#       "qm stop 9000",
-#       "sleep 10",
-#       "qm template 9000"
-#     ]
-#   }
-# }
+resource "null_resource" "convert_to_template" {
+  depends_on = [ module.vm_template ]
+  connection {
+    type        = "ssh"
+    host        = var.proxmox_host_ip   # Replace with your hypervisor's IP
+    user        = "root"        # The username for SSH access
+    private_key = file("~/.ssh/ant_net") # Use your SSH private key
+  }
+  # After VM is created, run the startup and wait for it
+  provisioner "remote-exec" {
+    inline = [
+      "qm start 9000",
+      "sleep 60",
+      "qm shutdown 9000",
+      "qm template 9000"
+    ]
+  }
+}
 
 # VM Modules
 
-# module "vpn_gateway" {
-#   source = "./modules/vm"
-#   vm_name = "VPN-gateway"
-#   vm_id = 110
-#   clone_id = 999
-#   proxmox_host = var.proxmox_host
-#   tags = ["terraform", "networking"]
-# }
+module "vpn_gateway" {
+  depends_on = [ null_resource.convert_to_template ]
+  source = "./modules/vm"
+  vm_name = "VPN-gateway"
+  vm_id = 110
+  clone_id = 9000
+  vm_ip = "10.10.10.10/24"
+  proxmox_host = var.proxmox_host
+  tags = ["terraform", "networking"]
+}
 
 module "mqtt_broker" {
-  depends_on = [ module.vm_template ]
+  depends_on = [ null_resource.convert_to_template ]
   source = "./modules/vm"
   vm_name = "MQTT-broker"
   vm_id = 111
@@ -70,25 +71,29 @@ module "mqtt_broker" {
   tags = ["terraform", "server"]
 }
 
-# module "coap_server" {
-#   source = "./modules/vm"
-#   vm_name = "CoAP-server"
-#   vm_id = 112
-#   clone_id = 999
-#   proxmox_host = var.proxmox_host
-#   tags = ["terraform", "server"]
-# }
+module "coap_server" {
+  depends_on = [ null_resource.convert_to_template ]
+  source = "./modules/vm"
+  vm_name = "CoAP-server"
+  vm_id = 112
+  clone_id = 9000
+  vm_ip = "10.10.10.12/24"
+  proxmox_host = var.proxmox_host
+  tags = ["terraform", "server"]
+}
 
-# module "file_server" {
-#   source = "./modules/vm"
-#   vm_name = "File-server"
-#   vm_id = 113
-#   clone_id = 999
-#   proxmox_host = var.proxmox_host
-#   tags = ["terraform", "server"]
-# }
+module "file_server" {
+  depends_on = [ null_resource.convert_to_template ]
+  source = "./modules/vm"
+  vm_name = "File-server"
+  vm_id = 113
+  clone_id = 9000
+  vm_ip = "10.10.10.13/24"
+  proxmox_host = var.proxmox_host
+  tags = ["terraform", "server"]
+}
 
-# # Network Aliases
+# Network Aliases
 
 # module "firewall_alias_wildcard" {
 #   source = "./modules/firewall_aliases"
@@ -119,40 +124,40 @@ module "mqtt_broker" {
 #   comment = "Laboratory Network Segment"
 # }
 
-# # Firewall options
+# Firewall options
 
-# # module "vpn_firewall_options" {
-# #   source = "./modules/firewall_options"
-# #   proxmox_host = var.proxmox_host
-# #   vm_id = 110
-# #   security_group_name = "vpn-firewall"
-# #   comment = "VPN Gateway Firewall Options"
-# #   depends_on = [ module.vpn_gateway ]
-# # }
-
-# module "mqtt_firewall_options" {
+# module "vpn_firewall_options" {
 #   source = "./modules/firewall_options"
 #   proxmox_host = var.proxmox_host
-#   vm_id = 111
-#   security_group_name = "labvnet"
-#   comment = "MQTT Broker Firewall Options"
-#   depends_on = [ module.coap_server, module.lab_net_firewall ]
+#   vm_id = 110
+#   security_group_name = "vpn-firewall"
+#   comment = "VPN Gateway Firewall Options"
+#   depends_on = [ module.vpn_gateway, module.lab_net_firewall ]
 # }
 
-# module "coap_firewall_options" {
-#   source = "./modules/firewall_options"
-#   proxmox_host = var.proxmox_host
-#   vm_id = 112
-#   security_group_name = "labvnet"
-#   comment = "CoAP Broker Firewall Options"
-#   depends_on = [ module.mqtt_broker, module.lab_net_firewall ]
-# }
+module "mqtt_firewall_options" {
+  source = "./modules/firewall_options"
+  proxmox_host = var.proxmox_host
+  vm_id = 111
+  security_group_name = "labvnet"
+  comment = "MQTT Broker Firewall Options"
+  depends_on = [ module.mqtt_broker, module.lab_net_firewall ]
+}
 
-# module "file_firewall_options" {
-#   source = "./modules/firewall_options"
-#   proxmox_host = var.proxmox_host
-#   vm_id = 113
-#   security_group_name = "labvnet"
-#   comment = "File Server Firewall Options"
-#   depends_on = [ module.file_server, module.lab_net_firewall ]
-# }
+module "coap_firewall_options" {
+  source = "./modules/firewall_options"
+  proxmox_host = var.proxmox_host
+  vm_id = 112
+  security_group_name = "labvnet"
+  comment = "CoAP Broker Firewall Options"
+  depends_on = [ module.coap_server, module.lab_net_firewall ]
+}
+
+module "file_firewall_options" {
+  source = "./modules/firewall_options"
+  proxmox_host = var.proxmox_host
+  vm_id = 113
+  security_group_name = "labvnet"
+  comment = "File Server Firewall Options"
+  depends_on = [ module.file_server, module.lab_net_firewall ]
+}
