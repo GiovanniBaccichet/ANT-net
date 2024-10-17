@@ -7,8 +7,9 @@ resource "proxmox_virtual_environment_vm" "this" {
   vm_id     = var.vm_id
 
   clone {
-    vm_id = var.clone_id
-    full = false
+    vm_id   = var.clone_id
+    full    = false
+
     retries = 3
   }
 
@@ -19,7 +20,7 @@ resource "proxmox_virtual_environment_vm" "this" {
   stop_on_destroy = true
 
   network_device {
-    bridge  = "labvnet"
+    bridge   = "labvnet"
     firewall = true
   }
 
@@ -27,15 +28,33 @@ resource "proxmox_virtual_environment_vm" "this" {
     type = "l26"
   }
 
-  tpm_state {
-    version = "v2.0"
-  }
-
   initialization {
     ip_config {
       ipv4 {
-        address = "dhcp"
+        address = var.vm_ip
+        gateway = "10.10.10.1"
       }
     }
+    user_account {
+      # password = random_password.ubuntu_vm_password.result
+      username = "antlab"
+      password = "antlab"
+      keys     = [trimspace(data.local_file.ssh_public_key.content)]
+    }
   }
+}
+
+resource "random_password" "ubuntu_vm_password" {
+  length           = 16
+  override_special = "_%@"
+  special          = true
+}
+
+output "ubuntu_vm_password" {
+  value     = random_password.ubuntu_vm_password.result
+  sensitive = true
+}
+
+data "local_file" "ssh_public_key" {
+  filename = "../ssh/proxmox_id_rsa.pub"
 }

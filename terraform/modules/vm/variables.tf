@@ -6,6 +6,10 @@ variable "vm_id" {
   description = "The ID of the VM"
 }
 
+variable "vm_ip" {
+  description = "IP Address of the VM withing the Network Segment"
+}
+
 variable "clone_id" {
   description = "The ID of the base VM to clone"
 }

@@ -23,3 +23,13 @@ variable "template_name" {
 #Blank var for use by terraform.tfvars
 variable "api_token" {
 }
+
+#Blank var for use by terraform.tfvars
+variable "username" {
+
+}
+
+#Blank var for use by terraform.tfvars
+variable "password" {
+
+}
