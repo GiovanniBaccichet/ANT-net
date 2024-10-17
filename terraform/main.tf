@@ -57,7 +57,25 @@ module "vpn_gateway" {
   clone_id = 9000
   vm_ip = "10.10.10.10/24"
   proxmox_host = var.proxmox_host
+  config_script = "../scripts/vm_configuration/vpn_gateway.sh"
   tags = ["terraform", "networking"]
+}
+
+resource "null_resource" "add_pcie_nic" {
+  depends_on = [ module.vpn_gateway ]
+  connection {
+    type        = "ssh"
+    host        = var.proxmox_host_ip   # Replace with your hypervisor's IP
+    user        = "root"        # The username for SSH access
+    private_key = file("~/.ssh/ant_net") # Use your SSH private key
+  }
+  # After VM is created, run the startup and wait for it
+  provisioner "remote-exec" {
+    inline = [
+      "qm set 110 -hostpci0 0000:04:00.0",
+      "qm reboot 110",
+    ]
+  }
 }
 
 module "mqtt_broker" {
@@ -68,6 +86,7 @@ module "mqtt_broker" {
   clone_id = 9000
   vm_ip = "10.10.10.11/24"
   proxmox_host = var.proxmox_host
+  config_script = "../scripts/vm_configuration/mqtt_broker.sh"
   tags = ["terraform", "server"]
 }
 
@@ -79,6 +98,7 @@ module "coap_server" {
   clone_id = 9000
   vm_ip = "10.10.10.12/24"
   proxmox_host = var.proxmox_host
+  config_script = "../scripts/vm_configuration/coap_server.sh"
   tags = ["terraform", "server"]
 }
 
@@ -90,6 +110,7 @@ module "file_server" {
   clone_id = 9000
   vm_ip = "10.10.10.13/24"
   proxmox_host = var.proxmox_host
+  config_script = "../scripts/vm_configuration/file_server.sh"
   tags = ["terraform", "server"]
 }
 

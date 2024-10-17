@@ -52,3 +52,11 @@ resource "random_password" "ubuntu_vm_password" {
 data "local_file" "ssh_public_key" {
   filename = "../ssh/proxmox_id_rsa.pub"
 }
+
+resource "null_resource" "run_script" {
+  depends_on = [proxmox_virtual_environment_vm.this]
+
+  provisioner "local-exec" {
+    command = var.config_script
+  }
+}

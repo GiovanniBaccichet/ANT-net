@@ -117,6 +117,23 @@ Simple Zones are explained into detail [here](https://pve.proxmox.com/wiki/Setup
 
 ### Installation
 
+External NIC to VPN Gateway:
+
+`qm set 111 -hostpci0 0000:04:00.0`
+
+Install EMQX:
+
+```bash
+curl -s https://assets.emqx.com/scripts/install-emqx-deb.sh | sudo bash && sudo apt-get install emqx && sudo systemctl start emqx && sudo emqx start
+```
+
+Routes for VPN gateway:
+
+`sudo ip route add 10.10.10.0/24 dev eth0`
+
+Interface for VPN gateway:
+
+`sudo sed -i '/eth0:/a\    ens16f0:\n      dhcp4: true' /etc/netplan/50-cloud-init.yaml && sudo netplan apply`
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

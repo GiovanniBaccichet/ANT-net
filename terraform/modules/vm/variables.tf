@@ -21,3 +21,7 @@ variable "tags" {
 variable "proxmox_host" {
   description = "Proxmox host name"
 }
+
+variable "config_script" {
+  description = "Configuration script"
+}
