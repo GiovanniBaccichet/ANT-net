@@ -23,13 +23,28 @@
 
 # Template Module
 
-module "vm_template" {
-  source = "./modules/vm-template"
+# module "vm_template" {
+#   source = "./modules/vm-template"
+#   proxmox_host = var.proxmox_host
+#   proxmox_host_ip = "10.79.5.250"
+# }
+
+# VM Modules
+
+module "vpn_gateway" {
+  # depends_on = [ module.vm_template ]
+  source = "./modules/vm"
+  vm_name = "VPN-gateway"
+  vm_id = 110
+  clone_id = 9000
+  vm_ip = "10.10.10.10/24"
   proxmox_host = var.proxmox_host
+  config_script = "../scripts/vm_configuration/vpn_gateway.sh"
+  tags = ["terraform", "networking"]
 }
 
-resource "null_resource" "convert_to_template" {
-  depends_on = [ module.vm_template ]
+resource "null_resource" "add_pcie_nic" {
+  depends_on = [ module.vpn_gateway ]
   connection {
     type        = "ssh"
     host        = var.proxmox_host_ip   # Replace with your hypervisor's IP
@@ -39,80 +54,48 @@ resource "null_resource" "convert_to_template" {
   # After VM is created, run the startup and wait for it
   provisioner "remote-exec" {
     inline = [
-      "qm start 9000",
-      "sleep 60",
-      "qm stop 9000",
-      "qm template 9000"
+      "qm set 110 -hostpci0 0000:04:00.0",
+      "qm stop 110",
+      "qm start 110"
     ]
   }
 }
 
-# VM Modules
+# module "mqtt_broker" {
+#   depends_on = [ module.vm_template ]
+#   source = "./modules/vm"
+#   vm_name = "MQTT-broker"
+#   vm_id = 111
+#   clone_id = 9000
+#   vm_ip = "10.10.10.11/24"
+#   proxmox_host = var.proxmox_host
+#   config_script = "../scripts/vm_configuration/mqtt_broker.yaml"
+#   tags = ["terraform", "server"]
+# }
 
-# module "vpn_gateway" {
+# module "coap_server" {
 #   depends_on = [ null_resource.convert_to_template ]
 #   source = "./modules/vm"
-#   vm_name = "VPN-gateway"
-#   vm_id = 110
+#   vm_name = "CoAP-server"
+#   vm_id = 112
 #   clone_id = 9000
-#   vm_ip = "10.10.10.10/24"
+#   vm_ip = "10.10.10.12/24"
 #   proxmox_host = var.proxmox_host
-#   config_script = "../scripts/vm_configuration/vpn_gateway.sh"
-#   tags = ["terraform", "networking"]
+#   config_script = "../scripts/vm_configuration/coap_server.yaml"
+#   tags = ["terraform", "server"]
 # }
 
-# resource "null_resource" "add_pcie_nic" {
-#   depends_on = [ module.vpn_gateway ]
-#   connection {
-#     type        = "ssh"
-#     host        = var.proxmox_host_ip   # Replace with your hypervisor's IP
-#     user        = "root"        # The username for SSH access
-#     private_key = file("~/.ssh/ant_net") # Use your SSH private key
-#   }
-#   # After VM is created, run the startup and wait for it
-#   provisioner "remote-exec" {
-#     inline = [
-#       "qm set 110 -hostpci0 0000:04:00.0",
-#       "qm reboot 110",
-#     ]
-#   }
+# module "file_server" {
+#   depends_on = [ null_resource.convert_to_template ]
+#   source = "./modules/vm"
+#   vm_name = "File-server"
+#   vm_id = 113
+#   clone_id = 9000
+#   vm_ip = "10.10.10.13/24"
+#   proxmox_host = var.proxmox_host
+#   config_script = "../scripts/vm_configuration/file_server.yaml"
+#   tags = ["terraform", "server"]
 # }
-
-module "mqtt_broker" {
-  depends_on = [ null_resource.convert_to_template ]
-  source = "./modules/vm"
-  vm_name = "MQTT-broker"
-  vm_id = 111
-  clone_id = 9000
-  vm_ip = "10.10.10.11/24"
-  proxmox_host = var.proxmox_host
-  config_script = "../scripts/vm_configuration/mqtt_broker.sh"
-  tags = ["terraform", "server"]
-}
-
-module "coap_server" {
-  depends_on = [ null_resource.convert_to_template ]
-  source = "./modules/vm"
-  vm_name = "CoAP-server"
-  vm_id = 112
-  clone_id = 9000
-  vm_ip = "10.10.10.12/24"
-  proxmox_host = var.proxmox_host
-  config_script = "../scripts/vm_configuration/coap_server.sh"
-  tags = ["terraform", "server"]
-}
-
-module "file_server" {
-  depends_on = [ null_resource.convert_to_template ]
-  source = "./modules/vm"
-  vm_name = "File-server"
-  vm_id = 113
-  clone_id = 9000
-  vm_ip = "10.10.10.13/24"
-  proxmox_host = var.proxmox_host
-  config_script = "../scripts/vm_configuration/file_server.sh"
-  tags = ["terraform", "server"]
-}
 
 # Network Aliases
 

@@ -13,6 +13,11 @@ resource "proxmox_virtual_environment_vm" "this" {
     retries = 3
   }
 
+  timeout_clone = 60
+  timeout_reboot = 60
+  timeout_start_vm = 60
+  timeout_shutdown_vm = 60
+
   agent {
     enabled = true
   }
@@ -35,12 +40,13 @@ resource "proxmox_virtual_environment_vm" "this" {
         gateway = "10.10.10.1"
       }
     }
+
     user_account {
       username = "antlab"
       password = "antlab"
       keys     = [trimspace(data.local_file.ssh_public_key.content)]
     }
-  }
+  }    
 }
 
 resource "random_password" "ubuntu_vm_password" {
@@ -51,12 +57,4 @@ resource "random_password" "ubuntu_vm_password" {
 
 data "local_file" "ssh_public_key" {
   filename = "../ssh/proxmox_id_rsa.pub"
-}
-
-resource "null_resource" "run_script" {
-  depends_on = [proxmox_virtual_environment_vm.this]
-
-  provisioner "local-exec" {
-    command = var.config_script
-  }
 }
