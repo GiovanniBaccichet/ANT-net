@@ -43,24 +43,13 @@ module "vpn_gateway" {
   tags = ["terraform", "networking"]
 }
 
-# resource "null_resource" "add_pcie_nic" {
-#   depends_on = [ module.vpn_gateway ]
-#   connection {
-#     type        = "ssh"
-#     host        = var.proxmox_host_ip   # Replace with your hypervisor's IP
-#     user        = "root"        # The username for SSH access
-#     private_key = file("~/.ssh/ant_net") # Use your SSH private key
-#   }
-#   # After VM is created, run the startup and wait for it
-#   provisioner "remote-exec" {
-#     inline = [
-#       "qm set 110 -hostpci0 0000:04:00.0",
-#       "qm guest exec 110 -- bash -c \"echo -e 'network:\\n  version: 2\\n  renderer: networkd\\n  ethernets:\\n    ens16:\\n      dhcp4: true' | sudo tee /etc/netplan/99_config.yaml && sudo netplan apply\"",
-#       "qm stop 110",
-#       "qm start 110"
-#     ]
-#   }
-# }
+resource "null_resource" "exec_vpn_gateway" {
+  depends_on = [ module.vpn_gateway ]
+  provisioner "local-exec" {
+    command = "ssh -i ../ssh/proxmox_id_rsa root@10.79.5.250 'bash -s' < ../scripts/vm_configuration/vpn_gateway.sh"
+  }
+}
+
 
 # module "mqtt_broker" {
 #   depends_on = [ module.vm_template ]
