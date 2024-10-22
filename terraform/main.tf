@@ -31,55 +31,44 @@
 
 # VM Modules
 
-module "vpn_gateway" {
+# module "vpn_gateway" {
+#   # depends_on = [ module.vm_template ]
+#   source = "./modules/vm"
+#   vm_name = "VPN-gateway"
+#   vm_id = 110
+#   clone_id = 9000
+#   vm_ip = "10.10.10.10/24"
+#   proxmox_host = var.proxmox_host
+#   config_script = "../scripts/vm_configuration/vpn_gateway.sh"
+#   tags = ["terraform", "networking"]
+# }
+
+# resource "null_resource" "exec_vpn_gateway" {
+#   depends_on = [ module.vpn_gateway ]
+#   provisioner "local-exec" {
+#     command = "ssh -i ../ssh/proxmox_id_rsa root@10.79.5.250 'bash -s' < ../scripts/vm_configuration/vpn_gateway.sh"
+#   }
+# }
+
+
+module "mqtt_broker" {
   # depends_on = [ module.vm_template ]
   source = "./modules/vm"
-  vm_name = "VPN-gateway"
-  vm_id = 110
+  vm_name = "MQTT-broker"
+  vm_id = 111
   clone_id = 9000
-  vm_ip = "10.10.10.10/24"
+  vm_ip = "10.10.10.11/24"
   proxmox_host = var.proxmox_host
-  config_script = "../scripts/vm_configuration/vpn_gateway.sh"
-  tags = ["terraform", "networking"]
+  config_script = "../scripts/vm_configuration/mqtt_broker.yaml"
+  tags = ["terraform", "server"]
 }
 
-resource "null_resource" "exec_vpn_gateway" {
-  depends_on = [ module.vpn_gateway ]
+resource "null_resource" "exec_mqtt_broker" {
+  depends_on = [ module.mqtt_broker ]
   provisioner "local-exec" {
-    command = "ssh -i ../ssh/proxmox_id_rsa root@10.79.5.250 'bash -s' < ../scripts/vm_configuration/vpn_gateway.sh"
+    command = "ssh -i ../ssh/proxmox_id_rsa root@10.79.5.250 'bash -s' < ../scripts/vm_configuration/mqtt_broker.sh"
   }
 }
-
-
-# module "mqtt_broker" {
-#   depends_on = [ module.vm_template ]
-#   source = "./modules/vm"
-#   vm_name = "MQTT-broker"
-#   vm_id = 111
-#   clone_id = 9000
-#   vm_ip = "10.10.10.11/24"
-#   proxmox_host = var.proxmox_host
-#   config_script = "../scripts/vm_configuration/mqtt_broker.yaml"
-#   tags = ["terraform", "server"]
-# }
-
-# resource "null_resource" "install_emqx" {
-#   depends_on = [ module.mqtt_broker ]
-#   connection {
-#     type        = "ssh"
-#     host        = var.proxmox_host_ip   # Replace with your hypervisor's IP
-#     user        = "root"        # The username for SSH access
-#     private_key = file("~/.ssh/ant_net") # Use your SSH private key
-#   }
-#   # After VM is created, run the startup and wait for it
-#   provisioner "remote-exec" {
-#     inline = [
-#       "qm guest exec 111 -- bash -c \"curl -s https://assets.emqx.com/scripts/install-emqx-deb.sh | sudo bash && sudo apt-get install emqx && sudo systemctl start emqx && sudo systemctl enable emqx\"",
-#       "qm stop 110",
-#       "qm start 110"
-#     ]
-#   }
-# }
 
 # module "coap_server" {
 #   depends_on = [ null_resource.convert_to_template ]
