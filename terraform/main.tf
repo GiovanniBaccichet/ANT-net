@@ -29,30 +29,37 @@
 #   proxmox_host_ip = "10.79.5.250"
 # }
 
+resource "null_resource" "vm_template" {
+  depends_on = [ module.vpn_gateway ]
+  provisioner "local-exec" {
+    command = "ssh -i ../ssh/proxmox_id_rsa root@10.79.5.250 'bash -s' < ../scripts/vm_configuration/vpn_gateway.sh"
+  }
+}
+
 # VM Modules
 
-# module "vpn_gateway" {
-#   # depends_on = [ module.vm_template ]
-#   source = "./modules/vm"
-#   vm_name = "VPN-gateway"
-#   vm_id = 110
-#   clone_id = 9000
-#   vm_ip = "10.10.10.10/24"
-#   proxmox_host = var.proxmox_host
-#   config_script = "../scripts/vm_configuration/vpn_gateway.sh"
-#   tags = ["terraform", "networking"]
-# }
+module "vpn_gateway" {
+  depends_on = [ module.vm_template ]
+  source = "./modules/vm"
+  vm_name = "VPN-gateway"
+  vm_id = 110
+  clone_id = 9000
+  vm_ip = "10.10.10.10/24"
+  proxmox_host = var.proxmox_host
+  config_script = "../scripts/vm_configuration/vpn_gateway.sh"
+  tags = ["terraform", "networking"]
+}
 
-# resource "null_resource" "exec_vpn_gateway" {
-#   depends_on = [ module.vpn_gateway ]
-#   provisioner "local-exec" {
-#     command = "ssh -i ../ssh/proxmox_id_rsa root@10.79.5.250 'bash -s' < ../scripts/vm_configuration/vpn_gateway.sh"
-#   }
-# }
+resource "null_resource" "exec_vpn_gateway" {
+  depends_on = [ module.vpn_gateway ]
+  provisioner "local-exec" {
+    command = "ssh -i ../ssh/proxmox_id_rsa root@10.79.5.250 'bash -s' < ../scripts/vm_configuration/vpn_gateway.sh"
+  }
+}
 
 
 module "mqtt_broker" {
-  # depends_on = [ module.vm_template ]
+  depends_on = [ module.vm_template ]
   source = "./modules/vm"
   vm_name = "MQTT-broker"
   vm_id = 111
