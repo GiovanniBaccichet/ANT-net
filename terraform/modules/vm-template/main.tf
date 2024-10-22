@@ -6,9 +6,13 @@ resource "proxmox_virtual_environment_vm" "this" {
   node_name = var.proxmox_host
   vm_id     = 9000
 
+  timeout_reboot = 60
+  timeout_start_vm = 60
+  timeout_shutdown_vm = 60
+
   agent {
     # read 'Qemu guest agent' section, change to true only when ready
-    enabled = false
+    enabled = true
   }
   # if agent is not enabled, the VM may not be able to shutdown properly, and may need to be forced off
   stop_on_destroy = true
@@ -36,7 +40,8 @@ resource "proxmox_virtual_environment_vm" "this" {
       username = "antlab"
       keys     = [trimspace(data.local_file.ssh_public_key.content)]
       #   password = "antlab"
-      password = random_password.ubuntu_vm_password.result
+      # password = random_password.ubuntu_vm_password.result
+      password = "antlab"
     }
   }
 

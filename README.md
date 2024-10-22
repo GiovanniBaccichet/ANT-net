@@ -92,6 +92,12 @@ Inside `terraform/terraform.tfvars` put the `api_token = "terraform@pve!provider
 
 ### Network
 
+Install guest agents on cloud image:
+
+```bash
+virt-customize -a noble-server-cloudimg-amd64.img --install qemu-guest-agent
+```
+
 The Proxmox Terraform provider we are using, despite being the one with the most features wrt API support, does not fully support the newly introduced SDN functionality of Proxmox (>= 8.0). For this reason we are using a bash script that leverages the `pvesh` command, a shell interface for the Proxmox VE API, more on that [here](https://pve.proxmox.com/pve-docs/pvesh.1.html).
 
 The script can be found in `scripts/network_setup.sh`, but here is a short comment to better understand what it does:
@@ -156,6 +162,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 - [x] Automatically configure networking
 - [x] Automatically generate API Token
+- [ ] Download and patch Ubuntu Cloud image w/ `qemu-guest-agent`
 - [x] Deploy VMs
 - [x] Deploy firewall rules 
 - [ ] Provision VMs

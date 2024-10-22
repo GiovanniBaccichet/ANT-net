@@ -9,6 +9,12 @@ DISK_SIZE="+16G"
 BRIDGE="labvnet"
 STORAGE="local-lvm"
 
+# Install libguestfs-tools on Proxmox server.
+apt-get install libguestfs-tools
+
+# Install qemu-guest-agent on Ubuntu image.
+virt-customize -a focal-server-cloudimg-amd64.img --install qemu-guest-agent
+
 # Download Ubuntu cloud image
 echo "Downloading Ubuntu cloud image..."
 wget $IMAGE_URL -O $IMAGE_NAME

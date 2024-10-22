@@ -43,23 +43,24 @@ module "vpn_gateway" {
   tags = ["terraform", "networking"]
 }
 
-resource "null_resource" "add_pcie_nic" {
-  depends_on = [ module.vpn_gateway ]
-  connection {
-    type        = "ssh"
-    host        = var.proxmox_host_ip   # Replace with your hypervisor's IP
-    user        = "root"        # The username for SSH access
-    private_key = file("~/.ssh/ant_net") # Use your SSH private key
-  }
-  # After VM is created, run the startup and wait for it
-  provisioner "remote-exec" {
-    inline = [
-      "qm set 110 -hostpci0 0000:04:00.0",
-      "qm stop 110",
-      "qm start 110"
-    ]
-  }
-}
+# resource "null_resource" "add_pcie_nic" {
+#   depends_on = [ module.vpn_gateway ]
+#   connection {
+#     type        = "ssh"
+#     host        = var.proxmox_host_ip   # Replace with your hypervisor's IP
+#     user        = "root"        # The username for SSH access
+#     private_key = file("~/.ssh/ant_net") # Use your SSH private key
+#   }
+#   # After VM is created, run the startup and wait for it
+#   provisioner "remote-exec" {
+#     inline = [
+#       "qm set 110 -hostpci0 0000:04:00.0",
+#       "qm guest exec 110 -- bash -c \"echo -e 'network:\\n  version: 2\\n  renderer: networkd\\n  ethernets:\\n    ens16:\\n      dhcp4: true' | sudo tee /etc/netplan/99_config.yaml && sudo netplan apply\"",
+#       "qm stop 110",
+#       "qm start 110"
+#     ]
+#   }
+# }
 
 # module "mqtt_broker" {
 #   depends_on = [ module.vm_template ]
@@ -71,6 +72,24 @@ resource "null_resource" "add_pcie_nic" {
 #   proxmox_host = var.proxmox_host
 #   config_script = "../scripts/vm_configuration/mqtt_broker.yaml"
 #   tags = ["terraform", "server"]
+# }
+
+# resource "null_resource" "install_emqx" {
+#   depends_on = [ module.mqtt_broker ]
+#   connection {
+#     type        = "ssh"
+#     host        = var.proxmox_host_ip   # Replace with your hypervisor's IP
+#     user        = "root"        # The username for SSH access
+#     private_key = file("~/.ssh/ant_net") # Use your SSH private key
+#   }
+#   # After VM is created, run the startup and wait for it
+#   provisioner "remote-exec" {
+#     inline = [
+#       "qm guest exec 111 -- bash -c \"curl -s https://assets.emqx.com/scripts/install-emqx-deb.sh | sudo bash && sudo apt-get install emqx && sudo systemctl start emqx && sudo systemctl enable emqx\"",
+#       "qm stop 110",
+#       "qm start 110"
+#     ]
+#   }
 # }
 
 # module "coap_server" {
