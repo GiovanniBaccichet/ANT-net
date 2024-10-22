@@ -162,12 +162,12 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 - [x] Automatically configure networking
 - [x] Automatically generate API Token
-- [ ] Download and patch Ubuntu Cloud image w/ `qemu-guest-agent`
+- [x] Download and patch Ubuntu Cloud image w/ `qemu-guest-agent`
 - [x] Deploy VMs
 - [x] Deploy firewall rules 
 - [ ] Provision VMs
   - [ ] VPN Gateway
-  - [ ] MQTT Broker
+  - [x] MQTT Broker
   - [ ] CoAP Server
   - [ ] File Server
 - [ ] Stress test the infrastructure

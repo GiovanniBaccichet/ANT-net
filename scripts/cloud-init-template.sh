@@ -3,7 +3,7 @@
 # Set variables
 IMAGE_URL="https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
 IMAGE_NAME="/var/lib/vz/template/iso/noble-server-cloudimg-guest_agent-amd64.img"
-VM_ID=9001
+VM_ID=9000
 MEMORY=4096
 N_CORES=4
 DISK_SIZE="+16.5G"
