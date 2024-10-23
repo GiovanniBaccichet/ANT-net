@@ -30,64 +30,66 @@ fi
 # Install qemu-guest-agent on Ubuntu image.
 virt-customize -a $IMAGE_NAME --install qemu-guest-agent && \
 
-# Create the VM
-echo "Creating VM $VM_ID..."
-qm create $VM_ID --memory $MEMORY --name ubuntu-cloud-GA && \
-if [ $? -ne 0 ]; then
-    echo "Error creating VM $VM_ID. Exiting..."
-    exit 1
-fi
+sleep 30
 
-# Import the disk
-echo "Importing disk..."
-qm importdisk $VM_ID $IMAGE_NAME $STORAGE && \
-if [ $? -ne 0 ]; then
-    echo "Error importing disk. Exiting..."
-    exit 1
-fi
+# # Create the VM
+# echo "Creating VM $VM_ID..."
+# qm create $VM_ID --memory $MEMORY --name ubuntu-cloud-GA && \
+# if [ $? -ne 0 ]; then
+#     echo "Error creating VM $VM_ID. Exiting..."
+#     exit 1
+# fi
 
-# Configure the VM's hardware
-echo "Configuring VM hardware..."
-qm set $VM_ID --scsihw virtio-scsi-pci --scsi0 $STORAGE:vm-$VM_ID-disk-0 && \
-qm set $VM_ID --ide2 $STORAGE:cloudinit && \
-qm set $VM_ID --boot c --bootdisk scsi0 && \
-qm set $VM_ID --serial0 socket --vga serial0 && \
+# # Import the disk
+# echo "Importing disk..."
+# qm importdisk $VM_ID $IMAGE_NAME $STORAGE && \
+# if [ $? -ne 0 ]; then
+#     echo "Error importing disk. Exiting..."
+#     exit 1
+# fi
 
-# Set the number of CPUs and CPU model
-echo "Setting CPU cores and type..."
-qm set $VM_ID --cores $N_CORES --cpu x86-64-v2-AES && \
-if [ $? -ne 0 ]; then
-    echo "Error setting CPU cores and type. Exiting..."
-    exit 1
-fi
+# # Configure the VM's hardware
+# echo "Configuring VM hardware..."
+# qm set $VM_ID --scsihw virtio-scsi-pci --scsi0 $STORAGE:vm-$VM_ID-disk-0 && \
+# qm set $VM_ID --ide2 $STORAGE:cloudinit && \
+# qm set $VM_ID --boot c --bootdisk scsi0 && \
+# qm set $VM_ID --serial0 socket --vga serial0 && \
 
-# Resize the disk
-echo "Resizing disk by $DISK_SIZE..."
-qm resize $VM_ID scsi0 $DISK_SIZE && \
-if [ $? -ne 0 ]; then
-    echo "Error resizing the disk. Exiting..."
-    exit 1
-fi
+# # Set the number of CPUs and CPU model
+# echo "Setting CPU cores and type..."
+# qm set $VM_ID --cores $N_CORES --cpu x86-64-v2-AES && \
+# if [ $? -ne 0 ]; then
+#     echo "Error setting CPU cores and type. Exiting..."
+#     exit 1
+# fi
 
-sleep 30 && \
+# # Resize the disk
+# echo "Resizing disk by $DISK_SIZE..."
+# qm resize $VM_ID scsi0 $DISK_SIZE && \
+# if [ $? -ne 0 ]; then
+#     echo "Error resizing the disk. Exiting..."
+#     exit 1
+# fi
 
-echo "Starting VM"
+# sleep 30 && \
 
-qm start $VM_ID && \
+# echo "Starting VM"
 
-sleep 360 && \
+# qm start $VM_ID && \
 
-echo "Shutting down VM"
+# sleep 360 && \
 
-qm shutdown $VM_ID && \
+# echo "Shutting down VM"
 
-#Convert the VM to a template
-echo "Converting VM $VM_ID to a template..."
-qm set $VM_ID --template 1 && \
-if [ $? -ne 0 ]; then
-    echo "Error converting VM to template. Exiting..."
-    exit 1
-fi
+# qm shutdown $VM_ID && \
 
-# Cleanup
-echo "Cloud image installation and setup completed for VM $VM_ID."
+# #Convert the VM to a template
+# echo "Converting VM $VM_ID to a template..."
+# qm set $VM_ID --template 1 && \
+# if [ $? -ne 0 ]; then
+#     echo "Error converting VM to template. Exiting..."
+#     exit 1
+# fi
+
+# # Cleanup
+# echo "Cloud image installation and setup completed for VM $VM_ID."

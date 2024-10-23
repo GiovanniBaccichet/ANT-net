@@ -30,6 +30,7 @@ resource "null_resource" "download_patch_cloud_init" {
 }
 
 module "vm_template" {
+  depends_on = [ null_resource.download_patch_cloud_init ]
   source = "./modules/vm-template"
   proxmox_host = var.proxmox_host
   proxmox_host_ip = var.proxmox_host_ip
@@ -38,7 +39,7 @@ module "vm_template" {
 # VM Modules
 
 module "vpn_gateway" {
-  depends_on = [ null_resource.vm_template ]
+  depends_on = [ module.vm_template ]
   source = "./modules/vm"
   vm_name = "VPN-gateway"
   vm_id = 110
@@ -57,7 +58,7 @@ resource "null_resource" "exec_vpn_gateway" {
 
 
 module "mqtt_broker" {
-  depends_on = [ null_resource.vm_template ]
+  depends_on = [ module.vm_template ]
   source = "./modules/vm"
   vm_name = "MQTT-broker"
   vm_id = 111
