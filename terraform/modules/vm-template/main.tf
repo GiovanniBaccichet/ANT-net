@@ -29,7 +29,6 @@ resource "proxmox_virtual_environment_vm" "this" {
 
   disk {
     datastore_id = "local-lvm"
-    # file_id      = proxmox_virtual_environment_download_file.latest_ubuntu_24_noble_qcow2_img.id
     file_id = "local:iso/noble-server-cloudimg-amd64.img"
     interface    = "scsi0"
     size         = 20
@@ -40,8 +39,8 @@ resource "proxmox_virtual_environment_vm" "this" {
       username = "antlab"
       keys     = [trimspace(data.local_file.ssh_public_key.content)]
       #   password = "antlab"
-      # password = random_password.ubuntu_vm_password.result
-      password = "antlab"
+      password = random_password.ubuntu_vm_password.result
+      # password = "antlab"
     }
   }
 
@@ -53,14 +52,6 @@ resource "proxmox_virtual_environment_vm" "this" {
 
   serial_device {}
 }
-
-# resource "proxmox_virtual_environment_download_file" "latest_ubuntu_24_noble_qcow2_img" {
-#   content_type        = "iso"
-#   datastore_id        = "local"
-#   node_name           = var.proxmox_host
-#   url                 = "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
-#   overwrite_unmanaged = true
-# }
 
 resource "random_password" "ubuntu_vm_password" {
   length           = 16

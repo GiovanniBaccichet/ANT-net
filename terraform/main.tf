@@ -23,10 +23,16 @@
 
 # Template Module
 
-resource "null_resource" "vm_template" {
+resource "null_resource" "download_patch_cloud_init" {
   provisioner "local-exec" {
     command = "ssh -i ../ssh/proxmox_id_rsa root@10.79.5.250 'bash -s' < ../scripts/cloud-init-template.sh"
   }
+}
+
+module "vm_template" {
+  source = "./modules/vm-template"
+  proxmox_host = var.proxmox_host
+  proxmox_host_ip = var.proxmox_host_ip
 }
 
 # VM Modules
