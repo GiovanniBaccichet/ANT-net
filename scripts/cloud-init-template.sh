@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo "[!] cloud-init template patcher initialized"
+
 # Set variables
 IMAGE_URL="https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
 IMAGE_NAME="/var/lib/vz/template/iso/noble-server-cloudimg-guest_agent-amd64.img"
