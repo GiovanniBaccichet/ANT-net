@@ -46,36 +46,35 @@ The project is build around <img src="https://github.com/walkxcode/dashboard-ico
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Some manual steps are required in order to setup the infrastructure, since the Terraform Proxmox plugin does not support the whole set of APIs that the hypervisor provides.
-
-1. Run `scripts/enable_dhcp_ipam.sh` script in order to allow Proxmox to assign the DHCP to the internal network, more on this [here](https://pve.proxmox.com/pve-docs/chapter-pvesdn.html#pvesdn_install_dhcp_ipam).
-2. Datacenter -> SDN -> Zones: Add - Simple: ID = `labnet`
-3. Datacenter -> SDN -> VNets: Create: Name: `labvnet` Zone: `labnet`
-   1. Subnets: Create: `10.10.10.0/24` Gateway: `10.10.10.1` SNAT: Enable
-4. SND -> Apply
+The main goal of this project being a reproducible and easy-to-deploy setup, most of the configurations are automatic and require little to none user interaction.
 
 ### Prerequisites
 
-The Terraform Proxmox provider uses API Token Key authentication. Before starting we need to create a user and generate an API token for that user (more info [here](https://registry.terraform.io/providers/bpg/proxmox/latest/docs)):
+To successfully deploy the infrastructure, ensure you meet the following requirements:
 
-1. Create the user with: 
-   ```bash
-   pveum user add terraform@pve
-   ```
-2. Create a role for the user: 
-   ```bash
-   pveum role add Terraform -privs "Datastore.Allocate Datastore.AllocateSpace Datastore.AllocateTemplate Datastore.Audit Pool.Allocate Sys.Audit Sys.Console Sys.Modify SDN.Use VM.Allocate VM.Audit VM.Clone VM.Config.CDROM VM.Config.Cloudinit VM.Config.CPU VM.Config.Disk VM.Config.HWType VM.Config.Memory VM.Config.Network VM.Config.Options VM.Migrate VM.Monitor VM.PowerMgmt User.Modify"
-   ```
-3. Assign the role to the previously created user: 
-   ```bash
-   pveum aclmod / -user terraform@pve -role Terraform
-   ```
-4. Create an API token for the user: 
-   ```bash
-   pveum user token add terraform@pve provider --privsep=0
-   ```
+1. **Proxmox Server**  
+   - A computer running <img src="https://github.com/walkxcode/dashboard-icons/blob/main/png/proxmox.png?raw=true" style="width:15px;"> [Proxmox Virtual Environment](https://www.proxmox.com/) (tested on version 8.2).  
+   - Ensure that the server is connected to the internet and has at least one separate Network Interface Card (NIC).
 
-Alternatively run the `scripts/generate__api_token.sh` bash script.
+2. **Network Interface Configuration**  
+   - **Motherboard NIC**: Reserved for internet access and Proxmox management - will be `vmbr0`.  
+   - **PCIe NIC**: Dedicated to the *VPN-Gateway* virtual machine. This NIC should be configured to be passed through to the VM and exposed publicly for VPN access.
+
+3. **Additional Requirements**  
+   - Sufficient resources (CPU, RAM, and storage) to run the Proxmox environment and the planned virtual machines - in the base config, at least 8 CPU cores and 16 GB RAM.  
+   - Access to a computer or device with Terraform installed (<img src="https://www.terraform.io/img/logo.png" style="width:15px;"> [Terraform installation guide](https://developer.hashicorp.com/terraform/tutorials)).  
+   - SSH keys configured for secure access to Proxmox and other virtual machines.
+
+4. **Terraform Environment**  
+   - Terraform (version 1.9.8 or later, tested with version 1.9.8).  
+   - The Terraform Proxmox provider configured. Install it via `terraform init` using the provided `proxmox` provider in this repo's `main.tf`.  
+
+
+### Proxmox Authentication
+
+The Terraform Proxmox provider uses API Token Key authentication. Before starting we need to create a user and generate an API token for that user (more info [here](https://registry.terraform.io/providers/bpg/proxmox/latest/docs)). For this project, user creation, permissions, API Token generation and SSH keys are managed using `scripts/ssh_api_token_setup.sh`.
+
+**It is mandatory to execute that script** - or generate manually a user, assign the correct permissions and generate an API Token - **before proceeding**. It will output the SSH keys, both public and private, in `ssh`, and will output in CLI the Proxmox API Token, which must be copied and will be used by Terraform as authentication.
 
 The `api_token` that the provider accepts is in the form:
 
