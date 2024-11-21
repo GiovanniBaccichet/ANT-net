@@ -76,13 +76,11 @@ The Terraform Proxmox provider uses API Token Key authentication. Before startin
 
 **It is mandatory to execute that script** - or generate manually a user, assign the correct permissions and generate an API Token - **before proceeding**. It will output the SSH keys, both public and private, in `ssh`, and will output in CLI the Proxmox API Token, which must be copied and will be used by Terraform as authentication.
 
-The `api_token` that the provider accepts is in the form:
+Inside `terraform/terraform.tfvars` put the output of the script, it should be something like:
 
 ```json
 api_token = "terraform@pve!provider=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ```
-
-Inside `terraform/terraform.tfvars` put the `api_token = "terraform@pve!provider=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"`
 
 ### Network
 
