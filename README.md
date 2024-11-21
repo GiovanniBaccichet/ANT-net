@@ -8,16 +8,11 @@
   <h3 align="center">ANT Net</h3>
 
   <p align="center">
-    Infrastructure as Code (IaC) for Advanced Network Technologies (ANT) Didactic Lab
+    Infrastructure as Code (IaC) for Advanced Network Technologies (ANT) Educational Lab
     <br />
-    <a href="https://github.com/GiovanniBaccichet/ANT-net"><strong>Explore the docs »</strong></a>
+    <a href="https://antlab.deib.polimi.it/"><strong>ANT Lab Website »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/GiovanniBaccichet/ANT-net">View Demo</a>
-    ·
-    <a href="https://github.com/GiovanniBaccichet/ANT-net/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
-    ·
-    <a href="https://github.com/GiovanniBaccichet/ANT-net/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
   </p>
 </div>
 
@@ -27,14 +22,14 @@
 ## About The Project
 
 ANT-Net is a self deployable virtual infrastructure that hosts different services that are used in different courses at Politecnico di Milano. In particular it hosts:
-- VPN Gateway
-- MQTT Broker
-- CoAP Server
-- File Server + Sensor Network
+- **VPN Gateway**: <img src="https://github.com/walkxcode/dashboard-icons/blob/main/png/wireguard.png?raw=true" style="width:15px;"> [Wireguard](https://www.wireguard.com/) server w/ web interface for managing users and remote access to the infrastructure
+- **MQTT Broker**: <img src="https://github.com/walkxcode/dashboard-icons/blob/main/png/emqx.png?raw=true" style="width:15px;"> [EMQX](https://www.emqx.com/en) server with web interface for managing topics and clients
+- **CoAP Server**: Python-based CoAP server
+- **File Server + Sensor Network**: a RPi network sending wireless data to a centralized file management service
 
-The architecture can be seen in the image below, and concerns network segments that are con
+The diagram below shows the logical organization of the virtual infrastructure, and in particular how the network is segmented to prevent users from communicating with machines on the outside of the virtual lab network.
 
-![alt text](images/proxmox-infra.png)
+![ANT-Net Infrastructure](images/proxmox-infra.png)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -42,7 +37,7 @@ The architecture can be seen in the image below, and concerns network segments t
 
 ### Built With
 
-Terraform, Packer.
+The project is build around <img src="https://github.com/walkxcode/dashboard-icons/blob/main/png/proxmox.png?raw=true" style="width:15px;"> [Proxmox](https://www.proxmox.com/en/). The deployment of VMs is performed through <img src="https://www.terraform.io/img/logo.png" style="width:15px;"> [Hashicorp Terraform](https://www.terraform.io/), using the [Terraform Provider for Proxmox](https://github.com/bpg/terraform-provider-proxmox). Despite being very well documented, said provider lacks some features regarding Proxmox templating and networking, and for that reason I added the scripts in `scripts/`. Additionally, the VM configuration is performed with the scripts in `scripts/vm_configuration`, this since every configuration is very simple, and it would have been totally overkill to use a tool like Ansible.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -216,6 +211,6 @@ Project Link: [https://github.com/GiovanniBaccichet/ANT-Net](https://github.com/
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-Use this space to list resources you find helpful and would like to give credit to. I've included a few of my favorites to kick things off!
+- Proxmox
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
