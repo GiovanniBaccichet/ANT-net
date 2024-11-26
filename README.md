@@ -84,11 +84,16 @@ api_token = "terraform@pve!provider=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 
 ### Installation
 
-With the API Token, the SSH public/ private key and the Proxmox password at hand, to initialize the deployment and configuration of the machine, you have to edit the `terraform/variables.tf`, inserting the configuration you have, as for the IP address of the Proxmox host, as well as its hostname.
+To deploy and configure the machine, ensure you have the following at hand:  
+- **API Token** (generated in the previous step) 
+- **Proxmox root password**  
 
-The file will look something like this:
+Follow these steps: 
 
-```json
+#### 1. Configure `variables.tf`
+Edit the `terraform/variables.tf` file to include your configuration details, such as the Proxmox host's IP address and hostname. Below is an example of what the file might look like:
+
+```hcl
 variable "proxmox_host" {
   default = "HOSTNAME_HERE"
 }
@@ -102,19 +107,33 @@ variable "api_url" {
 }
 ```
 
-After doing that, you should also populate the `terraform/terraform.tfvars` file with the API Token, and the root password of the Proxmox Host. This is because some functionality of the library rely on token-based authentication, while others use the SSH-based one. Here's a template:
+#### 2. Populate `terraform.tfvars`
 
-```
+Update the `terraform/terraform.tfvars` file with your API Token and Proxmox root password. This step is crucial as the [Terraform Provider for Proxmox](https://github.com/bpg/terraform-provider-proxmox) relies on both token-based and password-based authentication. Here's a template to guide you:
+
+```hcl
 api_token = "terraform@pve!provider=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 username = "root@pam"
 password = "PASSWORD_HERE"
 ```
-With everything done, you know should open a terminal in the `terraform/` folder and run the command `terraform init` to download and configure the provider, and `terraform apply --auto-approve` to initiate the deployment (it will take several minutes - i.e. 15-20 minutes).
-If you want a one-liner:
+
+#### 3. Initialize and Apply Terraform
+
+Once the configuration files are updated, navigate to the `terraform/` directory and run the following commands to initialize and apply the Terraform configuration:
+
+```bash
+terraform init
+terraform apply --auto-approve
+```
+
+This process will download and configure the provider, then deploy the configuration. Note: The deployment may take 15-20 minutes.
+
+For convenience, you can use this one-liner:
 
 ```bash
 terraform init && terraform apply --auto-approve
 ```
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -139,12 +158,12 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 - [x] Download and patch Ubuntu Cloud image w/ `qemu-guest-agent`
 - [x] Deploy VMs
 - [x] Deploy firewall rules 
-- [ ] Provision VMs
-  - [ ] VPN Gateway
+- [x] Provision VMs
+  - [x] VPN Gateway
   - [x] MQTT Broker
-  - [ ] CoAP Server
-  - [ ] File Server
-- [ ] Stress test the infrastructure
+  - [x] CoAP Server
+  - [x] File Server
+- [x] Stress test the infrastructure
 
 See the [open issues](https://github.com/GiovanniBaccichet/ANT-net/issues) for a full list of proposed features (and known issues).
 
