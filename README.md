@@ -63,7 +63,7 @@ To successfully deploy the infrastructure, ensure you meet the following require
 3. **Additional Requirements**  
    - Sufficient resources (CPU, RAM, and storage) to run the Proxmox environment and the planned virtual machines - in the base config, at least 8 CPU cores and 16 GB RAM.  
    - Access to a computer or device with Terraform installed (<img src="https://www.terraform.io/img/logo.png" style="width:15px;"> [Terraform installation guide](https://developer.hashicorp.com/terraform/tutorials)).  
-   - SSH keys configured for secure access to Proxmox and other virtual machines.
+   - SSH keys for secure access to Proxmox and other virtual machines will be configured in the next step.
 
 4. **Terraform Environment**  
    - Terraform (version 1.9.8 or later, tested with version 1.9.8).  
@@ -78,61 +78,43 @@ The Terraform Proxmox provider uses API Token Key authentication. Before startin
 
 Inside `terraform/terraform.tfvars` put the output of the script, it should be something like:
 
-```json
+```
 api_token = "terraform@pve!provider=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ```
 
-### Network
-
-Install guest agents on cloud image:
-
-```bash
-virt-customize -a noble-server-cloudimg-amd64.img --install qemu-guest-agent
-```
-
-The Proxmox Terraform provider we are using, despite being the one with the most features wrt API support, does not fully support the newly introduced SDN functionality of Proxmox (>= 8.0). For this reason we are using a bash script that leverages the `pvesh` command, a shell interface for the Proxmox VE API, more on that [here](https://pve.proxmox.com/pve-docs/pvesh.1.html).
-
-The script can be found in `scripts/network_setup.sh`, but here is a short comment to better understand what it does:
-
-1. Create a **simple zone**: 
-   ```bash
-   pvesh create /cluster/sdn/zones --type simple --zone "labnet" --dhcp "dnsmasq" --ipam "pve"
-   ```
-2. Create a **Virtual Network** within the previously created zone:
-   ```bash
-   pvesh create /cluster/sdn/vnets --vnet "labvnet" --zone "labnet"
-   ```
-3. Create a **subnet** for that Virtual Network:
-   ```bash
-   pvesh create /cluster/sdn/vnets/labvnet/subnets --subnet "10.10.10.0/24" --type "subnet" --gateway "10.10.10.1" --snat true --dhcp-range start-address=10.10.10.10,end-address=10.10.10.254
-   ```
-4. Apply SDN controller changes and reload:
-   ```bash
-   pvesh set /cluster/sdn
-   ```
-
-Simple Zones are explained into detail [here](https://pve.proxmox.com/wiki/Setup_Simple_Zone_With_SNAT_and_DHCP).
-
 ### Installation
 
-External NIC to VPN Gateway:
+With the API Token, the SSH public/ private key and the Proxmox password at hand, to initialize the deployment and configuration of the machine, you have to edit the `terraform/variables.tf`, inserting the configuration you have, as for the IP address of the Proxmox host, as well as its hostname.
 
-`qm set 111 -hostpci0 0000:04:00.0`
+The file will look something like this:
 
-Install EMQX:
+```json
+variable "proxmox_host" {
+  default = "HOSTNAME_HERE"
+}
 
-```bash
-curl -s https://assets.emqx.com/scripts/install-emqx-deb.sh | sudo bash && sudo apt-get install emqx && sudo systemctl start emqx && sudo emqx start
+variable "proxmox_host_ip" {
+  default = "10.79.5.250"
+}
+
+variable "api_url" {
+  default = "https://10.79.5.250:8006/api2/json"
+}
 ```
 
-Routes for VPN gateway:
+After doing that, you should also populate the `terraform/terraform.tfvars` file with the API Token, and the root password of the Proxmox Host. This is because some functionality of the library rely on token-based authentication, while others use the SSH-based one. Here's a template:
 
-`sudo ip route add 10.10.10.0/24 dev eth0`
+```
+api_token = "terraform@pve!provider=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+username = "root@pam"
+password = "PASSWORD_HERE"
+```
+With everything done, you know should open a terminal in the `terraform/` folder and run the command `terraform init` to download and configure the provider, and `terraform apply --auto-approve` to initiate the deployment (it will take several minutes - i.e. 15-20 minutes).
+If you want a one-liner:
 
-Interface for VPN gateway:
-
-`sudo sed -i '/eth0:/a\    ens16f0:\n      dhcp4: true' /etc/netplan/50-cloud-init.yaml && sudo netplan apply`
-
+```bash
+terraform init && terraform apply --auto-approve
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -197,17 +179,8 @@ Distributed under the GPLv3 License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Giovanni Baccichet - giovanni.baccichet@polimi.it
+Giovanni Baccichet - `giovanni.baccichet@polimi.it`
 
 Project Link: [https://github.com/GiovanniBaccichet/ANT-Net](https://github.com/GiovanniBaccichet/ANT-Net)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
-
-- Proxmox
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
