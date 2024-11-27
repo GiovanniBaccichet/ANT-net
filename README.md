@@ -117,7 +117,33 @@ username = "root@pam"
 password = "PASSWORD_HERE"
 ```
 
-#### 3. Initialize and Apply Terraform
+#### 3. Configure VM Password
+
+> [!CAUTION]  
+> The default credentials for VM templates are `antlab/antlab`. **Please ensure you change these for security reasons.**
+
+> [!TIP]  
+> We recommend changing each VM's password using the **Cloud-Init** tab in the Proxmox Web interface, after they are all configured. Assign a unique password to each VM for added security. Note that **SSH password authentication is disabled by default**, and all machines are behind a firewall.
+
+To set the **default** username and password for the VM template, edit the `terraform/modules/vm-template/main.tf` file. Locate the following section:
+
+```hcl
+user_account {
+  username = "antlab"
+  keys     = [trimspace(data.local_file.ssh_public_key.content)]
+  password = "antlab"
+}
+```
+
+This block specifies:
+- The **username** (antlab)
+- The **password** (antlab)
+- The **SSH keys**, which are automatically configured based on the script in the [Proxmox Authentication](#proxmox-authentication) section.
+
+By customizing these fields, you ensure the VM template is configured with secure and unique credentials. 
+
+
+#### 4. Initialize and Apply Terraform
 
 Once the configuration files are updated, navigate to the `terraform/` directory and run the following commands to initialize and apply the Terraform configuration:
 
@@ -142,9 +168,7 @@ terraform init && terraform apply --auto-approve
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
+In order to access the infrastructure, one should connect to the VPN gateway and 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
