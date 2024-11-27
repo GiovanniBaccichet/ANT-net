@@ -120,10 +120,10 @@ password = "PASSWORD_HERE"
 #### 3. Configure VM Password
 
 > [!CAUTION]  
-> The default credentials for VM templates are `antlab/antlab`. **Please ensure you change these for security reasons.**
+> The **default** credentials for the VM template are `antlab/antlab`.
 
 > [!TIP]  
-> We recommend changing each VM's password using the **Cloud-Init** tab in the Proxmox Web interface, after they are all configured. Assign a unique password to each VM for added security. Note that **SSH password authentication is disabled by default**, and all machines are behind a firewall.
+> During the creation of each VM, a random password is automatically generated and stored as a Terraform output. To view the generated password, use the following command: `terraform output -json` 
 
 To set the **default** username and password for the VM template, edit the `terraform/modules/vm-template/main.tf` file. Locate the following section:
 
@@ -139,9 +139,6 @@ This block specifies:
 - The **username** (antlab)
 - The **password** (antlab)
 - The **SSH keys**, which are automatically configured based on the script in the [Proxmox Authentication](#proxmox-authentication) section.
-
-By customizing these fields, you ensure the VM template is configured with secure and unique credentials. 
-
 
 #### 4. Initialize and Apply Terraform
 
