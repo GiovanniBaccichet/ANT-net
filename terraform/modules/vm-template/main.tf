@@ -38,9 +38,7 @@ resource "proxmox_virtual_environment_vm" "this" {
     user_account {
       username = "antlab"
       keys     = [trimspace(data.local_file.ssh_public_key.content)]
-      #   password = "antlab"
-      password = random_password.ubuntu_vm_password.result
-      # password = "antlab"
+        password = "antlab"
     }
   }
 
