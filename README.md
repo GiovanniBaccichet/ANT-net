@@ -181,7 +181,7 @@ To find the local IP address of the VPN, in order to access the segregated subne
 
 ![ANT-Net Infrastructure](images/proxmox-find-ip.png)
 
-> **Note**  
+> [!NOTE] 
 > When specifying the VPN configuration, ensure that you do not use the IP address from the segregated subnet. Instead, use the IP address assigned to the other network interface (NIC).  
 
 In this example, the NIC `ens16` has an IP address in the `10.79.0.0/24` subnet (and **not** the `10.10.10.10` one), which in production should be the public-facing NIC.
