@@ -177,6 +177,10 @@ To manage WireGuard, we use <img src="https://github.com/donaldzou/WGDashboard/r
 
 This dashboard streamlines the administration of the VPN gateway, ensuring efficient management of user access and network configurations.
 
+To find the local IP address of the VPN, in order to access the segregated subnet, one can use the Proxmox web dashboard, accessing the `VPN-gateway` section:
+
+![ANT-Net Infrastructure](images/proxmox-find-ip.png)
+
 #### Sharing VPN Configurations
 
 To distribute VPN configurations (e.g., to students in a course), follow these steps:
@@ -208,7 +212,6 @@ The script will recognize the original headers, and append new columns to the or
 ```bash
 python3 vpn-user-list.py [-o output.csv] [-p profiles-folder-path] input.csv
 ```  
-
 
 ### MQTT Broker
 
