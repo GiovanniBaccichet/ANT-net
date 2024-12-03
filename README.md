@@ -42,7 +42,6 @@ The project is build around <img src="https://github.com/walkxcode/dashboard-ico
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-
 <!-- GETTING STARTED -->
 ## Getting Started
 
@@ -117,13 +116,10 @@ username = "root@pam"
 password = "PASSWORD_HERE"
 ```
 
-#### 3. Configure VM Password
+#### 3. Configure Default VM Password
 
 > [!CAUTION]  
 > The **default** credentials for the VM template are `antlab/antlab`.
-
-> [!TIP]  
-> During the creation of each VM, a random password is automatically generated and stored as a Terraform output. To view the generated password, use the following command: `terraform output -json` 
 
 To set the **default** username and password for the VM template, edit the `terraform/modules/vm-template/main.tf` file. Locate the following section:
 
@@ -139,6 +135,9 @@ This block specifies:
 - The **username** (antlab)
 - The **password** (antlab)
 - The **SSH keys**, which are automatically configured based on the script in the [Proxmox Authentication](#proxmox-authentication) section.
+
+> [!TIP]  
+> During the creation of each VM, a random password is automatically generated and stored as a Terraform output. To view the generated password, use the following command: `terraform output -json` 
 
 #### 4. Initialize and Apply Terraform
 
@@ -160,16 +159,49 @@ terraform init && terraform apply --auto-approve
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-In order to access the infrastructure, one should connect to the VPN gateway and 
+### Remote Access
+
+> [!NOTE]  
+> The virtual infrastructure is completely isolated from the rest of the network. It cannot be accessed or communicate outside of its subnet. To connect to this network, you must use a VPN.
+
+By default, there are two methods for accessing the infrastructure:  
+1. **Tailscale** (the primary method)  
+2. **VPN Gateway VM** (intended as a backup method in case Tailscale encounters issues)
+
+Both access methods are detailed in the following sections.
+
+#### Tailscale
+
+As the primary access method, we use <img src="https://github.com/walkxcode/dashboard-icons/blob/main/png/tailscale.png?raw=true" style="width:15px;"> [Tailscale](https://tailscale.com/), a mesh VPN (Virtual Private Network) service that simplifies secure connections between devices and services across different networks.
+
+Tailscale is chosen for its:  
+- **Scalability**: Easily accommodates a growing number of connected users.  
+- **Ease of Use**: Straightforward installation and configuration across various Operating Systems (OSes).  
+
+#### Wireguard VPN Gateway
+
+### MQTT Broker
+
+We use EMQX as broker
+
+### CoAP Server
+
+We use a custom CoAP server based on CoAPthon.
+
+### File Server
+
+File server is used to collect data from sensor nodes.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## Additional Information
 
+More info here, like firewall configs.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- ROADMAP -->
 ## Roadmap
