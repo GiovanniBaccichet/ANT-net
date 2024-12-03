@@ -167,21 +167,42 @@ terraform init && terraform apply --auto-approve
 > [!NOTE]  
 > The virtual infrastructure is completely isolated from the rest of the network. It cannot be accessed or communicate outside of its subnet. To connect to this network, you must use a VPN.
 
-By default, there are two methods for accessing the infrastructure:  
-1. **Tailscale** (the primary method)  
-2. **VPN Gateway VM** (intended as a backup method in case Tailscale encounters issues)
+As a backup access method, we use <img src="https://github.com/walkxcode/dashboard-icons/blob/main/png/wireguard.png?raw=true" style="width:15px;"> [WireGuard](https://www.wireguard.com/), a high-performance, modern VPN protocol designed for simplicity and speed.
 
-Both access methods are detailed in the following sections.
+To manage WireGuard, we use <img src="https://github.com/donaldzou/WGDashboard/raw/main/src/static/app/public/img/logo.png" style="width:15px;"> [WGDashboard](https://github.com/donaldzou/WGDashboard), an open-source project that provides an intuitive dashboard for managing:  
+- Virtual networks  
+- Peer configurations  
+- Permissions  
+- Bulk creation and deletion of users  
 
-#### Tailscale
+This dashboard streamlines the administration of the VPN gateway, ensuring efficient management of user access and network configurations.
 
-As the primary access method, we use <img src="https://github.com/walkxcode/dashboard-icons/blob/main/png/tailscale.png?raw=true" style="width:15px;"> [Tailscale](https://tailscale.com/), a mesh VPN (Virtual Private Network) service that simplifies secure connections between devices and services across different networks.
+#### Sharing VPN Configurations
 
-Tailscale is chosen for its:  
-- **Scalability**: Easily accommodates a growing number of connected users.  
-- **Ease of Use**: Straightforward installation and configuration across various Operating Systems (OSes).  
+To distribute VPN configurations (e.g., to students in a course), follow these steps:
 
-#### Wireguard VPN Gateway
+1. **Bulk Create Configurations**: Use **WGDashboard** to **bulk create** the desired number of VPN configurations.
+
+2. **Download and Prepare Configurations**:  
+   - Download all the peer configuration files from WGDashboard.  
+   - Place these files into a folder (e.g., `vpn-profiles`).  
+   - Prepare a `.CSV` file (`users.csv`) containing the details of the users you want to share the configurations with.  
+
+3. **Run the Sharing Script**: use the provided script, `scripts/share-vpn-config.sh`, to associate each configuration with a user and prepare a distribution-ready file.  
+
+   The script will:  
+   - Match each VPN configuration to a user from `users.csv`.  
+   - Generate an updated `.CSV` that can be used to bulk send the configurations via tools like the Microsoft Office Word **Mailings** feature.  
+
+   Example structure for `users.csv`, and the *added VPN config (in italic)*:
+
+   | Name       | Email                | Additional Info | *Profile Name*                        | *VPN Config*                |
+   | ---------- | -------------------- | --------------- | ------------------------------------- | --------------------------- |
+   | John Doe   | john.doe@email.com   | ...             | *BulkPeer#160...* | "[Interface] PrivateKey..." |
+   | Jane Smith | jane.smith@email.com | ...             | ...                                   | ...                         |
+
+By automating the process, you can efficiently distribute VPN profiles to a large number of users.
+
 
 ### MQTT Broker
 
