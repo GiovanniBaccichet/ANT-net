@@ -188,7 +188,7 @@ To distribute VPN configurations (e.g., to students in a course), follow these s
    - Place these files into a folder (e.g., `vpn-profiles`).  
    - Prepare a `.CSV` file (`users.csv`) containing the details of the users you want to share the configurations with.  
 
-3. **Run the Sharing Script**: use the provided script, `scripts/share-vpn-config.sh`, to associate each configuration with a user and prepare a distribution-ready file.  
+3. **Run the Sharing Script**: use the provided script, `scripts/vpn-user-list.py`, to associate each configuration with a user and prepare a distribution-ready file.  
 
    The script will:  
    - Match each VPN configuration to a user from `users.csv`.  
@@ -196,10 +196,10 @@ To distribute VPN configurations (e.g., to students in a course), follow these s
 
    Example structure for `users.csv`, and the *added VPN config (in italic)*:
 
-   | Name       | Email                | Additional Info | *Profile Name*                        | *VPN Config*                |
-   | ---------- | -------------------- | --------------- | ------------------------------------- | --------------------------- |
+   | Name       | Email                | Additional Info | *Profile Name*    | *VPN Config*                |
+   | ---------- | -------------------- | --------------- | ----------------- | --------------------------- |
    | John Doe   | john.doe@email.com   | ...             | *BulkPeer#160...* | "[Interface] PrivateKey..." |
-   | Jane Smith | jane.smith@email.com | ...             | ...                                   | ...                         |
+   | Jane Smith | jane.smith@email.com | ...             | ...               | ...                         |
 
 By automating the process, you can efficiently distribute VPN profiles to a large number of users.
 
