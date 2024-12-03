@@ -220,7 +220,29 @@ python3 vpn-user-list.py [-o output.csv] [-p profiles-folder-path] input.csv
 
 ### MQTT Broker
 
-We use EMQX as broker
+As previously mentioned, we use <img src="https://github.com/walkxcode/dashboard-icons/blob/main/png/emqx.png?raw=true" style="width:15px;"> [EMQX](https://www.emqx.com/en) as the MQTT Broker.  
+
+**Why EMQX?**  
+
+- It is a widely recognized **industry standard** for MQTT broker implementations.  
+- Known for its **stability** and **reliability** when handling large amounts of network traffic.  
+- Provides a **comprehensive web interface** to monitor and manage activity effectively.
+
+---
+
+#### Access Details
+
+1. **Web Interface**:  
+   After connecting to the VPN, the EMQX web interface can be accessed at:  
+   `http://10.10.10.11:18083`
+
+2. **Pub/Sub Functionality**:  
+   For publishing and subscribing to MQTT topics, use the default port:  
+   `1883`
+
+---
+
+Make sure the VPN connection is active before attempting to access the web interface or pub/sub functionalities.
 
 ### CoAP Server
 
