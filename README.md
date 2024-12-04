@@ -246,17 +246,61 @@ Make sure the VPN connection is active before attempting to access the web inter
 
 ### CoAP Server
 
-We use a custom CoAP server based on CoAPthon.
+We use a custom **CoAP server** based on [CoAPthon3](https://github.com/Tanganelli/CoAPthon3), tailored to our specific requirements.
+
+---
+
+#### Accessing the CoAP Server
+
+To access the CoAP server:  
+
+1. **Ensure VPN Connection**:  
+   You must be connected via the **VPN Gateway** to reach the CoAP server.
+
+2. **Connect using IP Address**:  
+   You can reach the CoAP server at `10.10.10.12`, using the default port.
+
+---
+
+> **Note:**  
+> The CoAP server is only accessible within the isolated virtual network via the VPN connection.  
 
 ### File Server
 
-File server is used to collect data from sensor nodes.
+The File Server VM serves as a **data collector** from sensors and facilitates **data sharing** with users or students.  
+
+#### Usage Example
+
+In our setup, the File Server VM is used to:  
+1. **Capture Wi-Fi Network Traffic**:  
+   Sensor nodes (e.g., Raspberry Pis) capture Wi-Fi traffic. Details about the nodes can be found in the [Additional Information](#additional-information) section.  
+
+2. **Upload Packet Captures**:  
+   The nodes upload the captured packet data to the **File Server** over a VPN connection.  
+
+3. **Data Sharing**:  
+   The collected files are shared using a simple Python HTTP server hosted on the File Server.
+
+#### Deployment Considerations
+
+- **VPN-Based Collection**:  
+  Using a VPN simplifies node placement by enabling flexibility in network connectivity.  
+
+- **Alternative Setup**:  
+  Alternatively, one could use **PCI passthrough** to assign another NIC (Network Interface Card) to the File Server (similar to what was done for the *VPN Gateway*). This would allow a direct connection to, for example, a **PoE switch** isolated from the rest of the network.  
+
+> [!NOTE]
+> While a direct connection to an isolated PoE switch was our initial plan, it was deemed infeasible due to limitations in our physical network infrastructure.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Additional Information
 
 More info here, like firewall configs.
+
+### ANT-nodes
+
+Info on the custom image + expand filesystem
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
