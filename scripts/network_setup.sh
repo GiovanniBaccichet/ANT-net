@@ -19,7 +19,7 @@ echo "[!] Creating Virtual Network"
 pvesh create /cluster/sdn/vnets --vnet $VNET_NAME --zone $ZONE_NAME && \
 
 echo "[!] Creating Subnet for Virtual Netwok"
-pvesh create /cluster/sdn/vnets/labvnet/subnets --subnet $SUBNET --type "subnet" --gateway $GATEWAY --snat true --dhcp-range start-address=$DHCP_START,end-address=$DHCP_END && \
+pvesh create /cluster/sdn/vnets/$VNET_NAME/subnets --subnet $SUBNET --type "subnet" --gateway $GATEWAY --snat true --dhcp-range start-address=$DHCP_START,end-address=$DHCP_END && \
 
 echo "[!] Reloading..."
 pvesh set /cluster/sdn

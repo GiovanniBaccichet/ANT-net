@@ -43,7 +43,7 @@ resource "proxmox_virtual_environment_vm" "this" {
 
     user_account {
       username = "antlab"
-      password = random_password.ubuntu_vm_password
+      password = random_password.ubuntu_vm_password.result
       keys     = [trimspace(data.local_file.ssh_public_key.content)]
     }
   }    
@@ -51,10 +51,16 @@ resource "proxmox_virtual_environment_vm" "this" {
 
 resource "random_password" "ubuntu_vm_password" {
   length           = 16
-  override_special = "_%@"
   special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
 data "local_file" "ssh_public_key" {
   filename = "../ssh/proxmox_id_rsa.pub"
+}
+
+resource "local_file" "password_file" {
+  content  = random_password.ubuntu_vm_password.result
+  filename = "vm_password_${var.vm_name}.txt"
+  file_permission = "0600"
 }

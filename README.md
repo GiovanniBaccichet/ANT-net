@@ -262,7 +262,7 @@ To access the CoAP server:
 
 ---
 
-> **Note:**  
+> [!NOTE]   
 > The CoAP server is only accessible within the isolated virtual network via the VPN connection.  
 
 ### File Server
@@ -301,6 +301,14 @@ More info here, like firewall configs.
 ### ANT-nodes
 
 Info on the custom image + expand filesystem
+
+#### Troubleshooting
+
+If problem with rfkill:
+
+```bash
+sudo rfkill unblock wifi; sudo rfkill unblock all
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
