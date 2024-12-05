@@ -1,11 +1,15 @@
-# Network Setup
+################################
+#                              #
+#        NETWORK SETUP         #
+#                              #
+################################
 
 resource "null_resource" "network_setup" {
   connection {
     type        = "ssh"
-    host        = var.proxmox_host_ip   # Replace with your hypervisor's IP
-    user        = "root"        # The username for SSH access
-    private_key = file("~/.ssh/ant_net") # Use your SSH private key
+    host        = var.proxmox_host_ip
+    user        = "root"
+    private_key = file("~/.ssh/ant_net")
   }
 
   provisioner "file" {
@@ -21,14 +25,12 @@ resource "null_resource" "network_setup" {
   }
 }
 
-resource "null_resource" "network_setup" {
-  depends_on = [ null_resource.network_setup ]
-  provisioner "local-exec" {
-    command = "echo network setup here"
-  }
-}
 
-# Template Module
+################################
+#                              #
+#         VM TEMPLATE          #
+#                              #
+################################
 
 resource "null_resource" "download_patch_cloud_init" {
   depends_on = [ null_resource.network_setup ]
@@ -44,7 +46,16 @@ module "vm_template" {
   proxmox_host_ip = var.proxmox_host_ip
 }
 
-# VM Modules
+
+################################
+#                              #
+#          VM MODULES          #
+#                              #
+################################
+
+################################
+#         VPN GATEWAY          #
+################################
 
 module "vpn_gateway" {
   depends_on = [ module.vm_template ]
@@ -64,6 +75,9 @@ resource "null_resource" "exec_vpn_gateway" {
   }
 }
 
+################################
+#         MQTT BROKER          #
+################################
 
 module "mqtt_broker" {
   depends_on = [ module.vm_template ]
@@ -83,6 +97,10 @@ resource "null_resource" "exec_mqtt_broker" {
   }
 }
 
+################################
+#         CoAP SERVER          #
+################################
+
 module "coap_server" {
   depends_on = [ module.vm_template ]
   source = "./modules/vm"
@@ -93,6 +111,10 @@ module "coap_server" {
   proxmox_host = var.proxmox_host
   tags = ["terraform", "server"]
 }
+
+################################
+#         FILE SERVER          #
+################################
 
 resource "null_resource" "exec_coap_server" {
   depends_on = [ module.coap_server ]
@@ -112,7 +134,16 @@ module "file_server" {
   tags = ["terraform", "server"]
 }
 
-# Network Aliases
+
+################################
+#                              #
+#          FIREWALL            #
+#                              #
+################################
+
+################################
+#       NETWORK ALIASES        #
+################################
 
 module "firewall_alias_wildcard" {
   source = "./modules/firewall_aliases"
@@ -135,15 +166,15 @@ module "firewall_alias_labvnet" {
   alias_comment = "Lab Virtual Network"
 }
 
-# Firewall Modules
-
 module "lab_net_firewall" {
   source = "./modules/firewall"
   security_group_name = "labvnet"
   comment = "Laboratory Network Segment"
 }
 
-# Firewall options
+################################
+#        FIREWALL RULES        #
+################################
 
 module "vpn_firewall_options" {
   source = "./modules/firewall_options"
